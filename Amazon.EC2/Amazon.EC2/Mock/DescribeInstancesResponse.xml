@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DescribeInstancesResponse xmlns="http://ec2.amazonaws.com/doc/2008-12-01/">
+  <ResponseMetadata>
+    <RequestId>string</RequestId>
+  </ResponseMetadata>
+  <DescribeInstancesResult>
+    <!--1 or more repetitions:-->
+    <Reservation>
+      <ReservationId>string</ReservationId>
+      <OwnerId>string</OwnerId>
+      <RequesterId>string</RequesterId>
+      <!--1 or more repetitions:-->
+      <GroupName>string</GroupName>
+      <!--1 or more repetitions:-->
+      <RunningInstance>
+        <InstanceId>string</InstanceId>
+        <ImageId>string</ImageId>
+        <InstanceState>
+          <Code>3</Code>
+          <Name>string</Name>
+        </InstanceState>
+        <PrivateDnsName>string</PrivateDnsName>
+        <PublicDnsName>string</PublicDnsName>
+        <!--Optional:-->
+        <StateTransitionReason>string</StateTransitionReason>
+        <!--Optional:-->
+        <KeyName>string</KeyName>
+        <!--Optional:-->
+        <AmiLaunchIndex>string</AmiLaunchIndex>
+        <!--Zero or more repetitions:-->
+        <ProductCode>string</ProductCode>
+        <InstanceType>string</InstanceType>
+        <LaunchTime>string</LaunchTime>
+        <!--Optional:-->
+        <Placement>
+          <!--Optional:-->
+          <AvailabilityZone>string</AvailabilityZone>
+        </Placement>
+        <!--Optional:-->
+        <KernelId>string</KernelId>
+        <!--Optional:-->
+        <RamdiskId>string</RamdiskId>
+        <!--Optional:-->
+        <Platform>string</Platform>
+      </RunningInstance>
+    </Reservation>
+  </DescribeInstancesResult>
+</DescribeInstancesResponse>

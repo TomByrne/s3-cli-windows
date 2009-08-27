@@ -1,0 +1,507 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D7EA1B6A-FC02-453B-B18C-B6C31831F3B6}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>s3</RootNamespace>
+    <AssemblyName>s3</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\AmazonEC2.cs">
+      <Link>Amazon.EC2\AmazonEC2.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\AmazonEC2Client.cs">
+      <Link>Amazon.EC2\AmazonEC2Client.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\AmazonEC2Config.cs">
+      <Link>Amazon.EC2\AmazonEC2Config.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\AmazonEC2Exception.cs">
+      <Link>Amazon.EC2\AmazonEC2Exception.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\Address.cs">
+      <Link>Amazon.EC2\Model\Address.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\AllocateAddressRequest.cs">
+      <Link>Amazon.EC2\Model\AllocateAddressRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\AllocateAddressResponse.cs">
+      <Link>Amazon.EC2\Model\AllocateAddressResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\AllocateAddressResult.cs">
+      <Link>Amazon.EC2\Model\AllocateAddressResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\AssociateAddressRequest.cs">
+      <Link>Amazon.EC2\Model\AssociateAddressRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\AssociateAddressResponse.cs">
+      <Link>Amazon.EC2\Model\AssociateAddressResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\Attachment.cs">
+      <Link>Amazon.EC2\Model\Attachment.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\AttachVolumeRequest.cs">
+      <Link>Amazon.EC2\Model\AttachVolumeRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\AttachVolumeResponse.cs">
+      <Link>Amazon.EC2\Model\AttachVolumeResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\AttachVolumeResult.cs">
+      <Link>Amazon.EC2\Model\AttachVolumeResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\AuthorizeSecurityGroupIngressRequest.cs">
+      <Link>Amazon.EC2\Model\AuthorizeSecurityGroupIngressRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\AuthorizeSecurityGroupIngressResponse.cs">
+      <Link>Amazon.EC2\Model\AuthorizeSecurityGroupIngressResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\AvailabilityZone.cs">
+      <Link>Amazon.EC2\Model\AvailabilityZone.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\BlockDeviceMapping.cs">
+      <Link>Amazon.EC2\Model\BlockDeviceMapping.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\BundleInstanceRequest.cs">
+      <Link>Amazon.EC2\Model\BundleInstanceRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\BundleInstanceResponse.cs">
+      <Link>Amazon.EC2\Model\BundleInstanceResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\BundleInstanceResult.cs">
+      <Link>Amazon.EC2\Model\BundleInstanceResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\BundleTask.cs">
+      <Link>Amazon.EC2\Model\BundleTask.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\BundleTaskError.cs">
+      <Link>Amazon.EC2\Model\BundleTaskError.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CancelBundleTaskRequest.cs">
+      <Link>Amazon.EC2\Model\CancelBundleTaskRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CancelBundleTaskResponse.cs">
+      <Link>Amazon.EC2\Model\CancelBundleTaskResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CancelBundleTaskResult.cs">
+      <Link>Amazon.EC2\Model\CancelBundleTaskResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ConfirmProductInstanceRequest.cs">
+      <Link>Amazon.EC2\Model\ConfirmProductInstanceRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ConfirmProductInstanceResponse.cs">
+      <Link>Amazon.EC2\Model\ConfirmProductInstanceResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ConfirmProductInstanceResult.cs">
+      <Link>Amazon.EC2\Model\ConfirmProductInstanceResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ConsoleOutput.cs">
+      <Link>Amazon.EC2\Model\ConsoleOutput.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CreateKeyPairRequest.cs">
+      <Link>Amazon.EC2\Model\CreateKeyPairRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CreateKeyPairResponse.cs">
+      <Link>Amazon.EC2\Model\CreateKeyPairResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CreateKeyPairResult.cs">
+      <Link>Amazon.EC2\Model\CreateKeyPairResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CreateSecurityGroupRequest.cs">
+      <Link>Amazon.EC2\Model\CreateSecurityGroupRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CreateSecurityGroupResponse.cs">
+      <Link>Amazon.EC2\Model\CreateSecurityGroupResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CreateSnapshotRequest.cs">
+      <Link>Amazon.EC2\Model\CreateSnapshotRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CreateSnapshotResponse.cs">
+      <Link>Amazon.EC2\Model\CreateSnapshotResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CreateSnapshotResult.cs">
+      <Link>Amazon.EC2\Model\CreateSnapshotResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CreateVolumeRequest.cs">
+      <Link>Amazon.EC2\Model\CreateVolumeRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CreateVolumeResponse.cs">
+      <Link>Amazon.EC2\Model\CreateVolumeResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\CreateVolumeResult.cs">
+      <Link>Amazon.EC2\Model\CreateVolumeResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DeleteKeyPairRequest.cs">
+      <Link>Amazon.EC2\Model\DeleteKeyPairRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DeleteKeyPairResponse.cs">
+      <Link>Amazon.EC2\Model\DeleteKeyPairResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DeleteSecurityGroupRequest.cs">
+      <Link>Amazon.EC2\Model\DeleteSecurityGroupRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DeleteSecurityGroupResponse.cs">
+      <Link>Amazon.EC2\Model\DeleteSecurityGroupResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DeleteSnapshotRequest.cs">
+      <Link>Amazon.EC2\Model\DeleteSnapshotRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DeleteSnapshotResponse.cs">
+      <Link>Amazon.EC2\Model\DeleteSnapshotResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DeleteVolumeRequest.cs">
+      <Link>Amazon.EC2\Model\DeleteVolumeRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DeleteVolumeResponse.cs">
+      <Link>Amazon.EC2\Model\DeleteVolumeResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DeregisterImageRequest.cs">
+      <Link>Amazon.EC2\Model\DeregisterImageRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DeregisterImageResponse.cs">
+      <Link>Amazon.EC2\Model\DeregisterImageResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeAddressesRequest.cs">
+      <Link>Amazon.EC2\Model\DescribeAddressesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeAddressesResponse.cs">
+      <Link>Amazon.EC2\Model\DescribeAddressesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeAddressesResult.cs">
+      <Link>Amazon.EC2\Model\DescribeAddressesResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeAvailabilityZonesRequest.cs">
+      <Link>Amazon.EC2\Model\DescribeAvailabilityZonesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeAvailabilityZonesResponse.cs">
+      <Link>Amazon.EC2\Model\DescribeAvailabilityZonesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeAvailabilityZonesResult.cs">
+      <Link>Amazon.EC2\Model\DescribeAvailabilityZonesResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeBundleTasksRequest.cs">
+      <Link>Amazon.EC2\Model\DescribeBundleTasksRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeBundleTasksResponse.cs">
+      <Link>Amazon.EC2\Model\DescribeBundleTasksResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeBundleTasksResult.cs">
+      <Link>Amazon.EC2\Model\DescribeBundleTasksResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeImageAttributeRequest.cs">
+      <Link>Amazon.EC2\Model\DescribeImageAttributeRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeImageAttributeResponse.cs">
+      <Link>Amazon.EC2\Model\DescribeImageAttributeResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeImageAttributeResult.cs">
+      <Link>Amazon.EC2\Model\DescribeImageAttributeResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeImagesRequest.cs">
+      <Link>Amazon.EC2\Model\DescribeImagesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeImagesResponse.cs">
+      <Link>Amazon.EC2\Model\DescribeImagesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeImagesResult.cs">
+      <Link>Amazon.EC2\Model\DescribeImagesResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeInstancesRequest.cs">
+      <Link>Amazon.EC2\Model\DescribeInstancesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeInstancesResponse.cs">
+      <Link>Amazon.EC2\Model\DescribeInstancesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeInstancesResult.cs">
+      <Link>Amazon.EC2\Model\DescribeInstancesResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeKeyPairsRequest.cs">
+      <Link>Amazon.EC2\Model\DescribeKeyPairsRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeKeyPairsResponse.cs">
+      <Link>Amazon.EC2\Model\DescribeKeyPairsResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeKeyPairsResult.cs">
+      <Link>Amazon.EC2\Model\DescribeKeyPairsResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeRegionsRequest.cs">
+      <Link>Amazon.EC2\Model\DescribeRegionsRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeRegionsResponse.cs">
+      <Link>Amazon.EC2\Model\DescribeRegionsResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeRegionsResult.cs">
+      <Link>Amazon.EC2\Model\DescribeRegionsResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeSecurityGroupsRequest.cs">
+      <Link>Amazon.EC2\Model\DescribeSecurityGroupsRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeSecurityGroupsResponse.cs">
+      <Link>Amazon.EC2\Model\DescribeSecurityGroupsResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeSecurityGroupsResult.cs">
+      <Link>Amazon.EC2\Model\DescribeSecurityGroupsResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeSnapshotsRequest.cs">
+      <Link>Amazon.EC2\Model\DescribeSnapshotsRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeSnapshotsResponse.cs">
+      <Link>Amazon.EC2\Model\DescribeSnapshotsResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeSnapshotsResult.cs">
+      <Link>Amazon.EC2\Model\DescribeSnapshotsResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeVolumesRequest.cs">
+      <Link>Amazon.EC2\Model\DescribeVolumesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeVolumesResponse.cs">
+      <Link>Amazon.EC2\Model\DescribeVolumesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeVolumesResult.cs">
+      <Link>Amazon.EC2\Model\DescribeVolumesResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DetachVolumeRequest.cs">
+      <Link>Amazon.EC2\Model\DetachVolumeRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DetachVolumeResponse.cs">
+      <Link>Amazon.EC2\Model\DetachVolumeResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DetachVolumeResult.cs">
+      <Link>Amazon.EC2\Model\DetachVolumeResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DisassociateAddressRequest.cs">
+      <Link>Amazon.EC2\Model\DisassociateAddressRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\DisassociateAddressResponse.cs">
+      <Link>Amazon.EC2\Model\DisassociateAddressResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\Error.cs">
+      <Link>Amazon.EC2\Model\Error.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ErrorResponse.cs">
+      <Link>Amazon.EC2\Model\ErrorResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\GetConsoleOutputRequest.cs">
+      <Link>Amazon.EC2\Model\GetConsoleOutputRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\GetConsoleOutputResponse.cs">
+      <Link>Amazon.EC2\Model\GetConsoleOutputResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\GetConsoleOutputResult.cs">
+      <Link>Amazon.EC2\Model\GetConsoleOutputResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\Image.cs">
+      <Link>Amazon.EC2\Model\Image.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ImageAttribute.cs">
+      <Link>Amazon.EC2\Model\ImageAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\InstanceState.cs">
+      <Link>Amazon.EC2\Model\InstanceState.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\IpPermission.cs">
+      <Link>Amazon.EC2\Model\IpPermission.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\KeyPair.cs">
+      <Link>Amazon.EC2\Model\KeyPair.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\LaunchPermission.cs">
+      <Link>Amazon.EC2\Model\LaunchPermission.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ModifyImageAttributeRequest.cs">
+      <Link>Amazon.EC2\Model\ModifyImageAttributeRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ModifyImageAttributeResponse.cs">
+      <Link>Amazon.EC2\Model\ModifyImageAttributeResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\Placement.cs">
+      <Link>Amazon.EC2\Model\Placement.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\RebootInstancesRequest.cs">
+      <Link>Amazon.EC2\Model\RebootInstancesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\RebootInstancesResponse.cs">
+      <Link>Amazon.EC2\Model\RebootInstancesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\Region.cs">
+      <Link>Amazon.EC2\Model\Region.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\RegisterImageRequest.cs">
+      <Link>Amazon.EC2\Model\RegisterImageRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\RegisterImageResponse.cs">
+      <Link>Amazon.EC2\Model\RegisterImageResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\RegisterImageResult.cs">
+      <Link>Amazon.EC2\Model\RegisterImageResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ReleaseAddressRequest.cs">
+      <Link>Amazon.EC2\Model\ReleaseAddressRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ReleaseAddressResponse.cs">
+      <Link>Amazon.EC2\Model\ReleaseAddressResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\Reservation.cs">
+      <Link>Amazon.EC2\Model\Reservation.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ResetImageAttributeRequest.cs">
+      <Link>Amazon.EC2\Model\ResetImageAttributeRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ResetImageAttributeResponse.cs">
+      <Link>Amazon.EC2\Model\ResetImageAttributeResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\ResponseMetadata.cs">
+      <Link>Amazon.EC2\Model\ResponseMetadata.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\RevokeSecurityGroupIngressRequest.cs">
+      <Link>Amazon.EC2\Model\RevokeSecurityGroupIngressRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\RevokeSecurityGroupIngressResponse.cs">
+      <Link>Amazon.EC2\Model\RevokeSecurityGroupIngressResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\RunInstancesRequest.cs">
+      <Link>Amazon.EC2\Model\RunInstancesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\RunInstancesResponse.cs">
+      <Link>Amazon.EC2\Model\RunInstancesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\RunInstancesResult.cs">
+      <Link>Amazon.EC2\Model\RunInstancesResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\RunningInstance.cs">
+      <Link>Amazon.EC2\Model\RunningInstance.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\S3Storage.cs">
+      <Link>Amazon.EC2\Model\S3Storage.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\SecurityGroup.cs">
+      <Link>Amazon.EC2\Model\SecurityGroup.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\Snapshot.cs">
+      <Link>Amazon.EC2\Model\Snapshot.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\Storage.cs">
+      <Link>Amazon.EC2\Model\Storage.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\TerminateInstancesRequest.cs">
+      <Link>Amazon.EC2\Model\TerminateInstancesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\TerminateInstancesResponse.cs">
+      <Link>Amazon.EC2\Model\TerminateInstancesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\TerminateInstancesResult.cs">
+      <Link>Amazon.EC2\Model\TerminateInstancesResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\TerminatingInstance.cs">
+      <Link>Amazon.EC2\Model\TerminatingInstance.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\UserIdGroupPair.cs">
+      <Link>Amazon.EC2\Model\UserIdGroupPair.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Model\Volume.cs">
+      <Link>Amazon.EC2\Model\Volume.cs</Link>
+    </Compile>
+    <Compile Include="..\Amazon.EC2\Amazon.EC2\Util\S3UploadPolicy.cs">
+      <Link>Amazon.EC2\Util\S3UploadPolicy.cs</Link>
+    </Compile>
+    <Compile Include="..\AmazonWebServices\AWSAuthConnection.cs">
+      <Link>S3Library\AWSAuthConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\AmazonWebServices\Bucket.cs">
+      <Link>S3Library\Bucket.cs</Link>
+    </Compile>
+    <Compile Include="..\AmazonWebServices\CommonPrefixEntry.cs">
+      <Link>S3Library\CommonPrefixEntry.cs</Link>
+    </Compile>
+    <Compile Include="..\AmazonWebServices\GetResponse.cs">
+      <Link>S3Library\GetResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\AmazonWebServices\ListAllMyBucketsResponse.cs">
+      <Link>S3Library\ListAllMyBucketsResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\AmazonWebServices\ListBucketResponse.cs">
+      <Link>S3Library\ListBucketResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\AmazonWebServices\ListEntry.cs">
+      <Link>S3Library\ListEntry.cs</Link>
+    </Compile>
+    <Compile Include="..\AmazonWebServices\Owner.cs">
+      <Link>S3Library\Owner.cs</Link>
+    </Compile>
+    <Compile Include="..\AmazonWebServices\Response.cs">
+      <Link>S3Library\Response.cs</Link>
+    </Compile>
+    <Compile Include="..\AmazonWebServices\S3Object.cs">
+      <Link>S3Library\S3Object.cs</Link>
+    </Compile>
+    <Compile Include="..\AmazonWebServices\Utils.cs">
+      <Link>S3Library\Utils.cs</Link>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\Amazon.EC2\Amazon.EC2\Model\CreateSnapshotResponse.xslt">
+      <Link>Amazon.EC2\Model\CreateSnapshotResponse.xslt</Link>
+      <LogicalName>CreateSnapshotResponse.xslt</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

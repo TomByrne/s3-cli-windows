@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DescribeAvailabilityZonesResponse xmlns="http://ec2.amazonaws.com/doc/2008-12-01/">
+  <ResponseMetadata>
+    <RequestId>string</RequestId>
+  </ResponseMetadata>
+  <DescribeAvailabilityZonesResult>
+    <!--1 or more repetitions:-->
+    <AvailabilityZone>
+      <ZoneName>string</ZoneName>
+      <ZoneState>string</ZoneState>
+      <RegionName>string</RegionName>
+    </AvailabilityZone>
+  </DescribeAvailabilityZonesResult>
+</DescribeAvailabilityZonesResponse>

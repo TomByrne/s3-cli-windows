@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DescribeImagesResponse xmlns="http://ec2.amazonaws.com/doc/2008-12-01/">
+  <ResponseMetadata>
+    <RequestId>string</RequestId>
+  </ResponseMetadata>
+  <DescribeImagesResult>
+    <!--1 or more repetitions:-->
+    <Image>
+      <ImageId>string</ImageId>
+      <ImageLocation>string</ImageLocation>
+      <ImageState>string</ImageState>
+      <OwnerId>string</OwnerId>
+      <Visibility>string</Visibility>
+      <!--Zero or more repetitions:-->
+      <ProductCode>string</ProductCode>
+      <!--Optional:-->
+      <Architecture>string</Architecture>
+      <!--Optional:-->
+      <ImageType>string</ImageType>
+      <!--Optional:-->
+      <KernelId>string</KernelId>
+      <!--Optional:-->
+      <RamdiskId>string</RamdiskId>
+      <!--Optional:-->
+      <Platform>string</Platform>
+    </Image>
+  </DescribeImagesResult>
+</DescribeImagesResponse>

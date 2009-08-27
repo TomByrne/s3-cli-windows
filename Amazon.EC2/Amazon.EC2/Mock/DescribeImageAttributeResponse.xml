@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DescribeImageAttributeResponse xmlns="http://ec2.amazonaws.com/doc/2008-12-01/">
+  <ResponseMetadata>
+    <RequestId>string</RequestId>
+  </ResponseMetadata>
+  <DescribeImageAttributeResult>
+    <!--1 or more repetitions:-->
+    <ImageAttribute>
+      <ImageId>string</ImageId>
+      <!--Zero or more repetitions:-->
+      <LaunchPermission>
+        <!--Optional:-->
+        <UserId>string</UserId>
+        <!--Optional:-->
+        <GroupName>string</GroupName>
+      </LaunchPermission>
+      <!--Zero or more repetitions:-->
+      <ProductCode>string</ProductCode>
+      <!--Optional:-->
+      <KernelId>string</KernelId>
+      <!--Optional:-->
+      <RamdiskId>string</RamdiskId>
+      <!--Optional:-->
+      <BlockDeviceMapping>
+        <VirtualName>string</VirtualName>
+        <DeviceName>string</DeviceName>
+      </BlockDeviceMapping>
+    </ImageAttribute>
+  </DescribeImageAttributeResult>
+</DescribeImageAttributeResponse>
