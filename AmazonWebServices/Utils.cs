@@ -29,38 +29,44 @@ namespace com.amazon.s3
 
         public static string Host(string bucket)
         {
-            if (bucket.IndexOf(".") == -1)
+            if (bucket == "")
                 return DEFAULT_SERVER;
             else
-                return bucket;
+                return bucket + "." + DEFAULT_SERVER;
         }
 
         private static int securePort = 443;
-        public static int SecurePort {
-            get {
+        public static int SecurePort
+        {
+            get
+            {
                 return securePort;
             }
-            set {
+            set
+            {
                 securePort = value;
             }
         }
 
         private static int insecurePort = 80;
-        public static int InsecurePort {
-            get {
+        public static int InsecurePort
+        {
+            get
+            {
                 return insecurePort;
             }
-            set {
+            set
+            {
                 insecurePort = value;
             }
         }
 
-        public static string makeCanonicalString( string resource, WebRequest request )
+        public static string makeCanonicalString(string resource, WebRequest request)
         {
             SortedList headers = new SortedList();
-            foreach ( string key in request.Headers )
+            foreach (string key in request.Headers)
             {
-                headers.Add( key, request.Headers[ key ] );
+                headers.Add(key, request.Headers[key]);
             }
             if (headers["Content-Type"] == null)
             {
@@ -69,12 +75,12 @@ namespace com.amazon.s3
             return makeCanonicalString(request.Method, resource, headers, null);
         }
 
-        public static string makeCanonicalString( string verb, string resource, 
-                                                  SortedList headers, string expires )
+        public static string makeCanonicalString(string verb, string resource,
+                                                  SortedList headers, string expires)
         {
             StringBuilder buf = new StringBuilder();
-            buf.Append( verb );
-            buf.Append( "\n" );
+            buf.Append(verb);
+            buf.Append("\n");
 
             SortedList interestingHeaders = new SortedList();
             if (headers != null)
@@ -91,66 +97,66 @@ namespace com.amazon.s3
                     }
                 }
             }
-            if ( interestingHeaders[ ALTERNATIVE_DATE_HEADER ] != null )
+            if (interestingHeaders[ALTERNATIVE_DATE_HEADER] != null)
             {
-                interestingHeaders.Add( "date", "" );
+                interestingHeaders.Add("date", "");
             }
 
             // if the expires is non-null, use that for the date field.  this
             // trumps the x-amz-date behavior.
-            if ( expires != null )
+            if (expires != null)
             {
-                interestingHeaders.Add( "date", expires );
+                interestingHeaders.Add("date", expires);
             }
 
             // these headers require that we still put a new line after them,
             // even if they don't exist.
             {
-                string [] newlineHeaders = { "content-type", "content-md5" };
-                foreach ( string header in newlineHeaders )
+                string[] newlineHeaders = { "content-type", "content-md5" };
+                foreach (string header in newlineHeaders)
                 {
-                    if ( interestingHeaders.IndexOfKey( header ) == -1 )
+                    if (interestingHeaders.IndexOfKey(header) == -1)
                     {
-                        interestingHeaders.Add( header, "" );
+                        interestingHeaders.Add(header, "");
                     }
                 }
             }
 
             // Finally, add all the interesting headers (i.e.: all that startwith x-amz- ;-))
-            foreach ( string key in interestingHeaders.Keys )
+            foreach (string key in interestingHeaders.Keys)
             {
-                if ( key.StartsWith( AMAZON_HEADER_PREFIX ) )
+                if (key.StartsWith(AMAZON_HEADER_PREFIX))
                 {
-                    buf.Append( key ).Append( ":" ).Append( ( interestingHeaders[ key ] as string ).Trim() );
+                    buf.Append(key).Append(":").Append((interestingHeaders[key] as string).Trim());
                 }
                 else
                 {
-                    buf.Append( interestingHeaders[ key ] );
+                    buf.Append(interestingHeaders[key]);
                 }
-                buf.Append( "\n" );
+                buf.Append("\n");
             }
 
             // Do not include the query string parameters
-            int queryIndex = resource.IndexOf( '?' );
-            if ( queryIndex == -1 )
+            int queryIndex = resource.IndexOf('?');
+            if (queryIndex == -1)
             {
-                buf.Append( "/" + resource );
+                buf.Append("/" + resource);
             }
             else
             {
-                buf.Append( "/" + resource.Substring( 0, queryIndex ) );
+                buf.Append("/" + resource.Substring(0, queryIndex));
             }
 
-            Regex aclQueryStringRegEx = new Regex( ".*[&?]acl($|=|&).*" );
-            Regex torrentQueryStringRegEx = new Regex( ".*[&?]torrent($|=|&).*" );
+            Regex aclQueryStringRegEx = new Regex(".*[&?]acl($|=|&).*");
+            Regex torrentQueryStringRegEx = new Regex(".*[&?]torrent($|=|&).*");
             Regex loggingQueryStringRegEx = new Regex(".*[&?]logging($|=|&).*");
             if (aclQueryStringRegEx.IsMatch(resource))
             {
-                buf.Append( "?acl" );
+                buf.Append("?acl");
             }
-            else if ( torrentQueryStringRegEx.IsMatch( resource ) )
+            else if (torrentQueryStringRegEx.IsMatch(resource))
             {
-                buf.Append( "?torrent" );
+                buf.Append("?torrent");
             }
             else if (loggingQueryStringRegEx.IsMatch(resource))
             {
@@ -160,16 +166,16 @@ namespace com.amazon.s3
             return buf.ToString();
         }
 
-        public static string encode( string awsSecretAccessKey, string canonicalString, bool urlEncode )
+        public static string encode(string awsSecretAccessKey, string canonicalString, bool urlEncode)
         {
             Encoding ae = new UTF8Encoding();
-            HMACSHA1 signature = new HMACSHA1( ae.GetBytes( awsSecretAccessKey ) );
+            HMACSHA1 signature = new HMACSHA1(ae.GetBytes(awsSecretAccessKey));
             string b64 = Convert.ToBase64String(
-                                        signature.ComputeHash( ae.GetBytes(
-                                                        canonicalString.ToCharArray() ) )
+                                        signature.ComputeHash(ae.GetBytes(
+                                                        canonicalString.ToCharArray()))
                                                );
 
-            if ( urlEncode )
+            if (urlEncode)
             {
                 return HttpUtility.UrlEncode(b64);
             }
@@ -229,13 +235,13 @@ namespace com.amazon.s3
         public static string getHttpDate()
         {
             // Setting the Culture will ensure we get a proper HTTP Date.
-            string date = System.DateTime.UtcNow.ToString( "ddd, dd MMM yyyy HH:mm:ss ", System.Globalization.CultureInfo.InvariantCulture ) + "GMT";
+            string date = System.DateTime.UtcNow.ToString("ddd, dd MMM yyyy HH:mm:ss ", System.Globalization.CultureInfo.InvariantCulture) + "GMT";
             return date;
         }
 
         public static long currentTimeMillis()
         {
-            return (long)( DateTime.UtcNow - new DateTime( 1970, 1, 1 ) ).TotalMilliseconds;
+            return (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
         }
     }
 }

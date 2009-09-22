@@ -1,6 +1,0 @@
-C:\code\s3-unpacked\s3\s3\bin\Release\s3.exe.config
-C:\code\s3-unpacked\s3\s3\bin\Release\s3.exe
-C:\code\s3-unpacked\s3\s3\bin\Release\s3.pdb
-C:\code\s3-unpacked\s3\s3\obj\Release\ResolveAssemblyReference.cache
-C:\code\s3-unpacked\s3\s3\obj\Release\s3.exe
-C:\code\s3-unpacked\s3\s3\obj\Release\s3.pdb

@@ -24,9 +24,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Serialization;
 
 using com.amazon.s3;
-using s3.Properties; 
+using s3.Properties;
 
 namespace s3
 {
@@ -45,7 +47,7 @@ namespace s3
 
     class Program
     {
-        static void Main(string[] originalArgs)
+        static int Main(string[] originalArgs)
         {
             string command;
 
@@ -85,6 +87,7 @@ namespace s3
             bool bigOption = options.Contains("/big");
             bool backupOption = options.Contains("/backup");
             bool newOption = options.Contains("/new");
+            bool debugOption = options.Contains("/debug");
 
             try
             {
@@ -112,18 +115,18 @@ namespace s3
 
                     case "help":
                         Console.WriteLine(@"
-s3 auth
-    Prompts you for your S3 credentials for use in future invocations.
-
-s3 auth <key> <secret>
-    Sets authentication details non-interactively.
+s3 auth [<key> <secret>]
+    Prompts for authentication details or reads from command line if specified.
 
 s3 put <bucket>[/<keyprefix>] <filename> [/big] [/backup] [/new]
-    Puts the specified filename to S3. The filename excluding path is 
-    suffixed to the end of the supplied key prefix.
+example:
+s3 put mybucket pic*.jpg 
 
-    Adding the /big option splits files into 10MB chunks suffixed with .000, .001 etc.
-    This is done without creating any temporary files on disk.
+    Puts the specified filename to S3.  Wildcards are supported.  The filename 
+    excluding path is suffixed to the end of the supplied key prefix, if any.
+
+    Adding the /big option splits files into 10MB chunks suffixed with .000, 
+    .001 etc.  This is done without creating any temporary files on disk.
 
     Adding the /backup option causes only files with the archive attribute
     to be copied, and the archive attribute is reset after copying.
@@ -132,38 +135,89 @@ s3 put <bucket>[/<keyprefix>] <filename> [/big] [/backup] [/new]
     to be copied
 
 s3 get <bucket>/<key> [<filename>] [/big]
+example:
+s3 get mybucket/pic*
+    
     Gets the specified object from S3. If no filename is supplied then 
     the suffix of the key after the final slash is used as the filename.
+
+    A trailing * on the end of the key is treated as a wildcard, except
+    when the /big option or the <filename> is specified.
 
     Adding the /big option fetches a file or files split using the /big
     option with the put command.
 
 s3 list [<bucket>[/<keyprefix>]]
+example:
+s3 list mybucket/pic*
+
     Lists the keys in the bucket beginning with the keyprefix, if 
-    supplied.  With no paramters, gets the list of buckets.
+    supplied.  A trailing asterisk on the keyprefix is ignored.  With no 
+    parameters, gets the list of buckets.
 
 s3 snapshot <volumeID>
-    Starts an EBS snapshot.  Returns as soon as job begins.
-
-");
+    Starts an EBS snapshot.  Returns as soon as job begins.");
                         break;
 
                     default:
                         throw new SyntaxError();
                 }
             }
-            catch (SyntaxError)
+            catch (SyntaxError ex)
             {
-                Console.WriteLine("Wrong syntax. Try s3 help");
+                Console.Error.WriteLine("Wrong syntax. Try s3 help");
+                if (debugOption)
+                    Console.Error.WriteLine(ex.StackTrace);
+                return 3;
             }
             catch (NotFoundException ex)
             {
-                Console.WriteLine(string.Format("Not found: {0}", ex.what));
+                Console.Error.WriteLine(string.Format("Not found: {0}", ex.what));
+                if (debugOption)
+                    Console.Error.WriteLine(ex.StackTrace);
+                return 2;
+            }
+            catch (Amazon.EC2.AmazonEC2Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                if (debugOption)
+                    Console.Error.WriteLine(ex.StackTrace);
+            }
+            catch (System.Net.WebException ex)
+            {
+                XmlSerializer ser = new XmlSerializer(typeof(S3Error));
+                using (TextReader tr = new StringReader(ex.Message))
+                {
+                    try
+                    {
+                        S3Error error = ser.Deserialize(tr) as S3Error;
+                        Console.Error.WriteLine(string.Format("{0}\t{1}", error.Code, error.Message));
+                        if (debugOption)
+                        {
+                            Console.Error.WriteLine(ex.Message);
+                            Console.Error.WriteLine(ex.StackTrace);
+                        }
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // couldn't read XML so fall back to displaying the whole Message string from the original exception
+                        Console.Error.WriteLine(ex.Message);
+                        if (debugOption)
+                            Console.Error.WriteLine(ex.StackTrace);
+                    }
+                }
+
+                return 1;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.Message);
+                if (debugOption)
+                    Console.Error.WriteLine(ex.StackTrace);
+                return 3;
             }
+
+            return 0;
         }
 
         private static void snapshot(List<string> args)
@@ -242,10 +296,7 @@ s3 snapshot <volumeID>
 
             if (newOnly)
             {
-                ListBucketResponse listResp = svc.listBucket(bucket, baseKey, "", 0, null);
-                listResp.Connection.Close();
-
-                foreach (ListEntry e in listResp.Entries)
+                foreach (ListEntry e in iterativeList(bucket, baseKey))
                     filesOnS3.Add(e.Key);
             }
 
@@ -300,6 +351,8 @@ s3 snapshot <volumeID>
             AWSAuthConnection svc = new AWSAuthConnection();
 
             string resource, filename;
+            bool explicitFilename;
+
             if (args.Count == 2)
             {
                 resource = args[1];
@@ -307,11 +360,13 @@ s3 snapshot <volumeID>
                 if (lastSlash == -1)
                     throw new SyntaxError();
                 filename = resource.Substring(lastSlash + 1);
+                explicitFilename = false;
             }
             else if (args.Count == 3)
             {
                 resource = args[1];
                 filename = args[2];
+                explicitFilename = true;
             }
             else
                 throw new SyntaxError();
@@ -328,11 +383,10 @@ s3 snapshot <volumeID>
             {
                 if (key.EndsWith("*"))
                 {
-                    ListBucketResponse list = svc.listBucket(bucket, key.Substring(0, key.Length - 1), "", 0, null);
-                    list.Connection.Close();
-
-                    foreach (ListEntry e in list.Entries)
+                    foreach (ListEntry e in iterativeList(bucket, key.Substring(0, key.Length - 1)))
                         keys.Add(e.Key);
+                    if (keys.Count > 1 && explicitFilename)
+                        throw new SyntaxError();
                 }
                 else
                     keys.Add(key);
@@ -342,10 +396,8 @@ s3 snapshot <volumeID>
                 if (key.EndsWith("*"))
                     throw new SyntaxError();
 
-                ListBucketResponse list = svc.listBucket(bucket, key + ".", "", 0, null);
-                list.Connection.Close();
-                foreach (ListEntry e in list.Entries)
-                    if (Regex.IsMatch(e.Key, string.Format(@"^{0}\.\d\d\d$", key)))
+                foreach (ListEntry e in iterativeList(bucket, key + "."))
+                    if (Regex.IsMatch(e.Key, "^" + key + @"\.\d{3,5}$"))
                         keys.Add(e.Key);
             }
 
@@ -356,9 +408,13 @@ s3 snapshot <volumeID>
                 FileStream fs = null;
 
                 if (big)
+                {
                     fs = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite);
+                    keys.Sort(numericSuffixCompare);
+                }
+                else
+                    keys.Sort();
 
-                keys.Sort();
                 int sequence = 0;
 
                 foreach (string thisKey in keys)
@@ -368,7 +424,11 @@ s3 snapshot <volumeID>
 
                     if (!big)
                     {
-                        string thisFilename = thisKey.Substring(thisKey.LastIndexOf("/") + 1);
+                        string thisFilename;
+                        if (explicitFilename)
+                            thisFilename = filename;
+                        else
+                            thisFilename = thisKey.Substring(thisKey.LastIndexOf("/") + 1);
                         fs = new FileStream(thisFilename, FileMode.Create, FileAccess.ReadWrite);
                     }
                     else if (!thisKey.EndsWith(string.Format(".{0:000}", sequence)))
@@ -389,6 +449,13 @@ s3 snapshot <volumeID>
                 if (big)
                     fs.Close();
             }
+        }
+
+        private static int numericSuffixCompare(string x, string y)
+        {
+            int x1 = int.Parse(x.Substring(x.LastIndexOf(".") + 1));
+            int y1 = int.Parse(y.Substring(y.LastIndexOf(".") + 1));
+            return x1.CompareTo(y1);
         }
 
         static void list(List<string> args)
@@ -418,16 +485,43 @@ s3 snapshot <volumeID>
                     prefix = args[1].Substring(slashIdx + 1);
                 }
 
-                ListBucketResponse listResp = svc.listBucket(bucket, prefix, "", 0, null);
-                listResp.Connection.Close();
-                foreach (ListEntry e in listResp.Entries)
-                    Console.WriteLine(string.Format("{0} {1:0.0}M", e.Key, e.Size / (1024 * 1024)));
-                Console.WriteLine(string.Format("{0} files listed", listResp.Entries.Count));
+                if (prefix.EndsWith("*"))
+                    prefix = prefix.Substring(0, prefix.Length - 1);
+
+                int fileCount = 0;
+                foreach (ListEntry e in iterativeList(bucket, prefix))
+                {
+                    Console.WriteLine(string.Format("{2}\t{1:0.0}M\t{0}", e.Key, e.Size / (1024 * 1024), e.LastModified));
+                    fileCount++;
+                }
+
+                Console.WriteLine(string.Format("{0} files listed", fileCount));
             }
             else
                 throw new SyntaxError();
         }
+
+        static IEnumerable<ListEntry> iterativeList(string bucket, string prefix)
+        {
+            AWSAuthConnection svc = new AWSAuthConnection();
+            string marker = "";
+
+            while (true)
+            {
+                ListBucketResponse listResp = svc.listBucket(bucket, prefix, marker, 250, null);
+                listResp.Connection.Close();
+                foreach (ListEntry e in listResp.Entries)
+                    yield return e;
+
+                if (listResp.IsTruncated)
+                    marker = listResp.Entries[listResp.Entries.Count - 1].Key;
+                else
+                    yield break;
+            }
+        }
     }
+
+
 }
 
 namespace com.amazon.s3
