@@ -71,7 +71,7 @@ namespace com.amazon.s3
                         catch { }
                     }
 
-                    request.Timeout = 15000;
+                    request.Timeout = 30000;
                     this.response = request.GetResponse();
                     lastEx = null;
                 }

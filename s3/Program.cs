@@ -18,6 +18,7 @@
 // IN THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
@@ -47,6 +48,8 @@ namespace s3
 
     class Program
     {
+        static long perChunkBytes;
+
         static int Main(string[] originalArgs)
         {
             string command;
@@ -56,7 +59,7 @@ namespace s3
 
             foreach (string a in originalArgs)
                 if (a.StartsWith("/"))
-                    options.Add(a.ToLower());
+                    options.Add(a.ToLower().Split(new char[] { ':' })[0]);
                 else
                     args.Add(a);
 
@@ -84,10 +87,53 @@ namespace s3
             AWSAuthConnection.OUR_ACCESS_KEY_ID = Settings.Default.AccessKeyId;
             AWSAuthConnection.OUR_SECRET_ACCESS_KEY = Settings.Default.AccessKeySecret;
 
-            bool bigOption = options.Contains("/big");
+            const string bigOptionString = "/big";
+            bool bigOption = options.Contains(bigOptionString);
             bool backupOption = options.Contains("/backup");
             bool newOption = options.Contains("/new");
             bool debugOption = options.Contains("/debug");
+            const string aclOptionString = "/acl";
+            bool aclOption = options.Contains(aclOptionString);
+
+            double chunkMegabytes = 10;
+            if (bigOption)
+            {
+                try
+                {
+                    foreach (string a in originalArgs)
+                        if (a.StartsWith(bigOptionString))
+                        {
+                            chunkMegabytes = double.Parse(a.Split(new char[] { ':' })[1]);
+                            break;
+                        }
+                }
+                catch
+                {
+                    Console.Error.WriteLine("Chunk size not understood.  Defaulting to {0} megabytes.", chunkMegabytes);
+                }
+            }
+            perChunkBytes = (long)(chunkMegabytes * 1024.0 * 1024.0);
+
+            string acl = null;
+            if (aclOption)
+            {
+                try
+                {
+                    foreach (string a in originalArgs)
+                        if (a.StartsWith(aclOptionString))
+                        {
+                            acl = a.Split(new char[] { ':' })[1];
+                            break;
+                        }
+                }
+                catch
+                {
+                    Console.Error.WriteLine("ACL not understood.  Defaulting to private.");
+                    acl = null;
+                }
+            }
+            else
+                acl = null;
 
             try
             {
@@ -98,7 +144,7 @@ namespace s3
                         break;
 
                     case "put":
-                        put(args, bigOption, backupOption, newOption);
+                        put(args, bigOption, backupOption, newOption, acl);
                         break;
 
                     case "list":
@@ -118,24 +164,27 @@ namespace s3
 s3 auth [<key> <secret>]
     Prompts for authentication details or reads from command line if specified.
 
-s3 put <bucket>[/<keyprefix>] <filename> [/big] [/backup] [/new]
-example:
-s3 put mybucket pic*.jpg 
+s3 put <bucket>[/<keyprefix>] <filename> [/big[:<size>]] [/backup] [/new] [/acl:<acl>]
+Example:
+s3 put mybucket pic*.jpg /acl:public-read
 
     Puts the specified filename to S3.  Wildcards are supported.  The filename 
     excluding path is suffixed to the end of the supplied key prefix, if any.
 
-    Adding the /big option splits files into 10MB chunks suffixed with .000, 
-    .001 etc.  This is done without creating any temporary files on disk.
+    The /big option splits files into 10MB chunks suffixed with .000, .001 etc.
+    This is done without creating any temporary files on disk.  A custom chunk
+    size can be specified in MB, e.g. /big:0.1 creates chunks of about 100KB.
 
     Adding the /backup option causes only files with the archive attribute
     to be copied, and the archive attribute is reset after copying.
 
     Adding the /new option causes only files that don't already exist on S3
-    to be copied
+    to be copied.
+
+    Adding /acl:public-read will make uploaded files publicly-readable.
 
 s3 get <bucket>/<key> [<filename>] [/big]
-example:
+Example:
 s3 get mybucket/pic*
     
     Gets the specified object from S3. If no filename is supplied then 
@@ -148,7 +197,7 @@ s3 get mybucket/pic*
     option with the put command.
 
 s3 list [<bucket>[/<keyprefix>]]
-example:
+Example:
 s3 list mybucket/pic*
 
     Lists the keys in the bucket beginning with the keyprefix, if 
@@ -249,12 +298,24 @@ s3 snapshot <volumeID>
             }
         }
 
-        static void put(List<string> args, bool big, bool backup, bool newOnly)
+        static SortedList getHeaders(string acl, string mime)
+        {
+            SortedList headers = new SortedList();
+            if (acl != null)
+                headers.Add("x-amz-acl", acl);
+            if (mime != null)
+                headers.Add("Content-Type", mime);
+            return headers;
+        }
+
+        static void put(List<string> args, bool big, bool backup, bool newOnly, string acl)
         {
             AWSAuthConnection svc = new AWSAuthConnection();
 
             if (args.Count != 3)
                 throw new SyntaxError();
+
+            SortedList headers = getHeaders(acl, null);
 
             int slashIdx = args[1].IndexOf("/");
             string bucket, baseKey;
@@ -322,20 +383,18 @@ s3 snapshot <volumeID>
                         else
                         {
                             Console.WriteLine(string.Format("Writing to key {0}", key));
-                            svc.put(bucket, key, fs, null).Connection.Close();
+                            svc.put(bucket, key, fs, headers).Connection.Close();
                         }
                     }
                     else
                     {
-                        const long perChunkBytes = 10L * 1024L * 1024L;
-
                         int sequence = 0;
                         while (fs.Position < fs.Length)
                         {
                             long putBytes = Math.Min(perChunkBytes, fs.Length - fs.Position);
                             string thisKey = string.Format("{0}.{1:000}", key, sequence);
                             Console.WriteLine(string.Format("Writing to key {0}", thisKey));
-                            svc.put(bucket, thisKey, fs, null, fs.Position, putBytes).Connection.Close();
+                            svc.put(bucket, thisKey, fs, headers, fs.Position, putBytes).Connection.Close();
                             sequence++;
                         }
                     }
