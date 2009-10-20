@@ -260,6 +260,43 @@ namespace com.amazon.s3
         }
 
         /// <summary>
+        /// Reads the headers for an object from S3
+        /// </summary>
+        /// <param name="bucket">The name of the bucket where the object lives</param>
+        /// <param name="key">The name of the key to use</param>
+        /// <param name="headers">A Map of string to string representing the HTTP headers to pass (can be null)</param>
+        public GetResponse head(string bucket, string key, SortedList headers)
+        {
+            return new GetResponse(makeRequest("HEAD", encodeKeyForSignature(key), headers, bucket), false);
+        }
+
+        /// <summary>
+        /// Gets the last modified date for a key on S3
+        /// </summary>
+        /// <param name="bucket">The name of the bucket where the object lives</param>
+        /// <param name="key">The name of the key to use</param>
+        /// <returns>Returns time in UTC, or null if the object does not exist</returns>
+        public DateTime? getLastModified(string bucket, string key)
+        {
+            WebResponse resp;
+
+            try
+            {
+                resp = head(bucket, key, null).Connection;
+            }
+            catch (WebException ex)
+            {
+                if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.NotFound)
+                    return null;
+                else
+                    throw;
+            }
+
+            resp.Close();
+            return DateTime.Parse(resp.Headers["Last-Modified"]).ToUniversalTime();
+        }
+
+        /// <summary>
         /// Delete an object from S3.
         /// </summary>
         /// <param name="bucket">The name of the bucket where the object lives.</param>

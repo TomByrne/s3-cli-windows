@@ -95,7 +95,9 @@ namespace com.amazon.s3
                     lastEx = ex;
                     retries += 1;
 
-                    if (contentLength == -1)
+                    int statusCode = (int)((HttpWebResponse)ex.Response).StatusCode;
+
+                    if (contentLength == -1 && statusCode >= 500 && statusCode < 600)
                     {
                         Debug.WriteLine("Rebuilding request automatically");
 

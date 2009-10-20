@@ -53,6 +53,9 @@ namespace s3
         static int Main(string[] originalArgs)
         {
             string command;
+            upgradeSettings();
+            Version v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            Console.Error.WriteLine("s3.exe version {0}.{1} - check for updates at http://s3.codeplex.com\n", v.Major, v.Minor);
 
             List<string> args = new List<string>();
             List<string> options = new List<string>();
@@ -90,7 +93,7 @@ namespace s3
             const string bigOptionString = "/big";
             bool bigOption = options.Contains(bigOptionString);
             bool backupOption = options.Contains("/backup");
-            bool newOption = options.Contains("/new");
+            bool syncOption = options.Contains("/sync");
             bool debugOption = options.Contains("/debug");
             const string aclOptionString = "/acl";
             bool aclOption = options.Contains(aclOptionString);
@@ -144,7 +147,7 @@ namespace s3
                         break;
 
                     case "put":
-                        put(args, bigOption, backupOption, newOption, acl);
+                        put(args, bigOption, backupOption, syncOption, acl);
                         break;
 
                     case "list":
@@ -160,52 +163,55 @@ namespace s3
                         break;
 
                     case "help":
-                        Console.WriteLine(@"
+                        Console.Error.WriteLine(
+@"Please blog or twitter about s3.exe if you find it useful.
+
 s3 auth [<key> <secret>]
     Prompts for authentication details or reads from command line if specified.
 
-s3 put <bucket>[/<keyprefix>] <filename> [/big[:<size>]] [/backup] [/new] [/acl:<acl>]
+s3 put <bucket>[/<keyprefix>] <filename> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>]
 Example:
 s3 put mybucket pic*.jpg /acl:public-read
 
-    Puts the specified filename to S3.  Wildcards are supported.  The filename 
+    Puts the specified filename to S3.  Wildcards are supported.  The filename
     excluding path is suffixed to the end of the supplied key prefix, if any.
 
-    The /big option splits files into 10MB chunks suffixed with .000, .001 etc.
-    This is done without creating any temporary files on disk.  A custom chunk
-    size can be specified in MB, e.g. /big:0.1 creates chunks of about 100KB.
+    /big splits files into 10MB chunks suffixed with .000, .001 etc.  This is
+    done without creating any temporary files on disk.  A custom chunk size 
+    can be specified in MB, e.g. /big:0.1 creates chunks of about 100KB.
 
-    Adding the /backup option causes only files with the archive attribute
-    to be copied, and the archive attribute is reset after copying.
+    /backup causes only files with the archive attribute to be copied, and the
+    archive attribute is reset after copying.
 
-    Adding the /new option causes only files that don't already exist on S3
-    to be copied.
+    /sync only uploads files that do not exist on S3 or have been modified
+    since last being uploaded. 
 
-    Adding /acl:public-read will make uploaded files publicly-readable.
+    /acl sets the ACL.  To make files public use /acl:public-read
 
 s3 get <bucket>/<key> [<filename>] [/big]
 Example:
 s3 get mybucket/pic*
     
-    Gets the specified object from S3. If no filename is supplied then 
-    the suffix of the key after the final slash is used as the filename.
+    Gets the specified object from S3. If no filename is supplied then the 
+    suffix of the key after the final slash is used as the filename.
 
-    A trailing * on the end of the key is treated as a wildcard, except
-    when the /big option or the <filename> is specified.
+    A trailing * on the end of the key is treated as a wildcard, except when 
+    the /big option or the <filename> is specified.
 
-    Adding the /big option fetches a file or files split using the /big
-    option with the put command.
+    /big fetches a file or files split using /big with the put command.
 
 s3 list [<bucket>[/<keyprefix>]]
 Example:
 s3 list mybucket/pic*
 
-    Lists the keys in the bucket beginning with the keyprefix, if 
-    supplied.  A trailing asterisk on the keyprefix is ignored.  With no 
-    parameters, gets the list of buckets.
+    Lists the keys in the bucket beginning with the keyprefix, if supplied.  A
+    trailing asterisk on the keyprefix is ignored.  With no parameters, gets 
+    the list of buckets.
 
 s3 snapshot <volumeID>
-    Starts an EBS snapshot.  Returns as soon as job begins.");
+    Starts an EBS snapshot.  Returns as soon as job begins.
+
+Please blog or twitter about s3.exe if you find it useful.");
                         break;
 
                     default:
@@ -269,6 +275,20 @@ s3 snapshot <volumeID>
             return 0;
         }
 
+        private static void upgradeSettings()
+        {
+            System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();
+            Version appVersion = a.GetName().Version;
+            string appVersionString = appVersion.ToString();
+
+            if (Properties.Settings.Default.ApplicationVersion != appVersion.ToString())
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.ApplicationVersion = appVersionString;
+                Properties.Settings.Default.Save();
+            }
+        }
+
         private static void snapshot(List<string> args)
         {
             if (args.Count == 2)
@@ -308,7 +328,7 @@ s3 snapshot <volumeID>
             return headers;
         }
 
-        static void put(List<string> args, bool big, bool backup, bool newOnly, string acl)
+        static void put(List<string> args, bool big, bool backup, bool sync, string acl)
         {
             AWSAuthConnection svc = new AWSAuthConnection();
 
@@ -353,14 +373,6 @@ s3 snapshot <volumeID>
             if (files.Count == 0)
                 throw new NotFoundException(filename);
 
-            List<string> filesOnS3 = new List<string>();
-
-            if (newOnly)
-            {
-                foreach (ListEntry e in iterativeList(bucket, baseKey))
-                    filesOnS3.Add(e.Key);
-            }
-
             foreach (string file in files)
             {
                 if (backup && (File.GetAttributes(file) & FileAttributes.Archive) != FileAttributes.Archive)
@@ -368,8 +380,12 @@ s3 snapshot <volumeID>
 
                 string key = baseKey + Path.GetFileName(file);
 
-                if (newOnly && filesOnS3.Contains(key))
-                    continue;
+                if (sync)
+                {
+                    DateTime? lastModified = svc.getLastModified(bucket, key);
+                    if (lastModified.HasValue && lastModified.Value > File.GetLastWriteTimeUtc(file))
+                        continue;
+                }
 
                 const long maxFileBytes = 5L * 1024L * 1024L * 1024L;
 
@@ -378,7 +394,7 @@ s3 snapshot <volumeID>
                     if (!big)
                     {
                         if (fs.Length > maxFileBytes)
-                            Console.WriteLine(string.Format("{0} is too big; maximum file size on S3 is {1}GB. Type s3 help and see the /big option.",
+                            Console.Error.WriteLine(string.Format("{0} is too big; maximum file size on S3 is {1}GB. Type s3 help and see the /big option.",
                                 Path.GetFileName(file), maxFileBytes / 1024 / 1024 / 1024));
                         else
                         {
