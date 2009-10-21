@@ -469,6 +469,23 @@
     <Compile Include="..\AmazonWebServices\Utils.cs">
       <Link>S3Library\Utils.cs</Link>
     </Compile>
+    <Compile Include="AWSAuthConnection.cs" />
+    <Compile Include="CommandLine.cs" />
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\Auth.cs" />
+    <Compile Include="Commands\Snapshot.cs" />
+    <Compile Include="Commands\List.cs" />
+    <Compile Include="Commands\Get.cs" />
+    <Compile Include="Commands\Help.cs" />
+    <Compile Include="Commands\Put.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="Options\Big.cs" />
+    <Compile Include="Options\Acl.cs" />
+    <Compile Include="Options\Backup.cs" />
+    <Compile Include="Options\Verbose.cs" />
+    <Compile Include="Options\Option.cs" />
+    <Compile Include="Options\OptionWithParameter.cs" />
+    <Compile Include="Options\Sync.cs" />
     <Compile Include="S3Error.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
