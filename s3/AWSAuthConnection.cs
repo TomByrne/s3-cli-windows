@@ -8,6 +8,7 @@ namespace com.amazon.s3
     public partial class AWSAuthConnection
     {
         public static string OUR_ACCESS_KEY_ID, OUR_SECRET_ACCESS_KEY;
+        public static bool verbose = false;
 
         public static SortedList getHeaders(string acl, string mime)
         {

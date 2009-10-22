@@ -54,9 +54,11 @@ namespace s3
 
                 AWSAuthConnection.OUR_ACCESS_KEY_ID = Settings.Default.AccessKeyId;
                 AWSAuthConnection.OUR_SECRET_ACCESS_KEY = Settings.Default.AccessKeySecret;
-
                 
                 debugOption = cl.options.ContainsKey(typeof(s3.Options.Verbose));
+                if (debugOption)
+                    AWSAuthConnection.verbose = true;
+
                 cl.command.execute();
             }
             catch (SyntaxError ex)

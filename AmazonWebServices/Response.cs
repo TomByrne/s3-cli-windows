@@ -95,11 +95,25 @@ namespace com.amazon.s3
                     lastEx = ex;
                     retries += 1;
 
-                    int statusCode = (int)((HttpWebResponse)ex.Response).StatusCode;
-
-                    if (contentLength == -1 && statusCode >= 500 && statusCode < 600)
+                    int? statusCode;
+                    HttpWebResponse response = ex.Response as HttpWebResponse;
+                    if (response == null)
                     {
-                        Debug.WriteLine("Rebuilding request automatically");
+                        statusCode = null;
+                        if (AWSAuthConnection.verbose)
+                            Console.WriteLine("WebException ({0}) but couldn't determine status code", ex.Message);
+                    }
+                    else
+                    {
+                        statusCode = (int)response.StatusCode;
+                        if (AWSAuthConnection.verbose)
+                            Console.WriteLine("WebException ({0}) with status code {1}", ex.Message, statusCode);
+                    }
+
+                    if (contentLength == -1 && (statusCode == null || (statusCode >= 500 && statusCode < 600)))
+                    {
+                        if (AWSAuthConnection.verbose)
+                            Console.WriteLine("Rebuilding request automatically");
 
                         // we can rebuild the request here and retry it (sadly there's no request.Reset())
                         WebRequest newRequest = WebRequest.Create(request.RequestUri);
