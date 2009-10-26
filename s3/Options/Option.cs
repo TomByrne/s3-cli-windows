@@ -18,8 +18,10 @@ namespace s3.Options
             typeof(Acl), 
             typeof(Backup), 
             typeof(Big), 
+            typeof(Sub),
             typeof(Sync), 
-            typeof(Verbose)
+            typeof(Verbose),
+            typeof(Yes)
         };
 
         /// <summary>
@@ -29,7 +31,7 @@ namespace s3.Options
         protected virtual void initialise(string parameter)
         {
             if (!string.IsNullOrEmpty(parameter))
-                throw new SyntaxError(string.Format("The {0} option does not accept a parameter", GetType().Name));
+                throw new SyntaxException(string.Format("The {0} option does not accept a parameter", GetType().Name));
         }
 
         const string optionPrefix = "/";
@@ -67,7 +69,7 @@ namespace s3.Options
                         return optionObject;
                     }
 
-                throw new SyntaxError(string.Format("Unrecognised option: {0}", optionName));
+                throw new SyntaxException(string.Format("Unrecognised option: {0}", optionName));
             }
             else
                 return null;

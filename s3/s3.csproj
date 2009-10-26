@@ -478,10 +478,14 @@
     <Compile Include="Commands\Get.cs" />
     <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\Put.cs" />
-    <Compile Include="Exceptions.cs" />
+    <Compile Include="IterativeList.cs" />
+    <Compile Include="Options\Yes.cs" />
+    <Compile Include="SyntaxException.cs" />
+    <Compile Include="FileDirectoryEnumerator.cs" />
     <Compile Include="Options\Big.cs" />
     <Compile Include="Options\Acl.cs" />
     <Compile Include="Options\Backup.cs" />
+    <Compile Include="Options\Sub.cs" />
     <Compile Include="Options\Verbose.cs" />
     <Compile Include="Options\Option.cs" />
     <Compile Include="Options\OptionWithParameter.cs" />

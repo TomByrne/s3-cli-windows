@@ -207,6 +207,9 @@ namespace com.amazon.s3
                 }
                 catch (WebException ex)
                 {
+                    HttpWebResponse response = ex.Response as HttpWebResponse;
+                    if (response != null && (int)response.StatusCode >= 400 && (int)response.StatusCode < 500)
+                        throw;
                     failEx = ex;
                 }
                 catch (IOException ex)
@@ -226,8 +229,9 @@ namespace com.amazon.s3
                     }
                     catch { }
                     retries += 1;
-                    Debug.WriteLine("Put failed on attempt " + retries.ToString() + failEx.Message);
-                    if (retries > maxRetries)
+                    if (verbose)
+                        Console.WriteLine(string.Format("Put failed on attempt {0}: {1}", retries.ToString(), failEx.Message));
+                    if (retries >= maxRetries)
                         throw failEx;
                     else
                         System.Threading.Thread.Sleep(250 * (int)Math.Pow(2, retries - 1));
@@ -425,8 +429,6 @@ namespace com.amazon.s3
         {
             string keyForUrl, keyForEncryption;
             string server = Utils.Host(bucket);
-
-            Debug.Assert(!resourceWithoutBucket.StartsWith("/"));
 
             if (bucket == "" && resourceWithoutBucket == "")
             {

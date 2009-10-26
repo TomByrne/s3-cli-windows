@@ -30,7 +30,7 @@ namespace s3.Options
         /// Takes the user-supplied parameter, if supplied, and attempts to convert it into the required type
         /// </summary>
         /// <param name="value"></param>
-        protected override void initialise(string value)
+        protected sealed override void initialise(string value)
         {
             parameterIsPresent = !string.IsNullOrEmpty(value);
 
@@ -42,12 +42,14 @@ namespace s3.Options
                 }
                 catch (FormatException)
                 {
-                    throw new SyntaxError(string.Format("The {0} option takes a parameter of type {1}, but you provided '{2}'",
+                    throw new SyntaxException(string.Format("The {0} option takes a parameter of type {1}, but you provided '{2}'",
                         GetType().Name, typeof(parameterType).Name, value));
                 }
+
+                parameterIsSet();
             }
             else if (parameterIsCompulsory)
-                throw new SyntaxError(string.Format("The {0} option requires a parameter", GetType().Name));
+                throw new SyntaxException(string.Format("The {0} option requires a parameter", GetType().Name));
         }
 
         internal static parameterType getOptionParameter(CommandLine cl, Type type, bool optionIsRequired)
@@ -57,10 +59,12 @@ namespace s3.Options
             else
             {
                 if (optionIsRequired)
-                    throw new SyntaxError(string.Format("The {0} command requires the {1} option", cl.command.GetType().Name, type.Name));
+                    throw new SyntaxException(string.Format("The {0} command requires the {1} option", cl.command.GetType().Name, type.Name));
                 else
                     return default(parameterType);
             }
         }
+
+        protected virtual void parameterIsSet() { }
     }
 }

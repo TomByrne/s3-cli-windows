@@ -24,13 +24,13 @@ namespace s3
                 else
                 {
                     if (options.ContainsKey(o.GetType()))
-                        throw new SyntaxError(string.Format("The {0} option was specified more than once", o.GetType().Name));
+                        throw new SyntaxException(string.Format("The {0} option was specified more than once", o.GetType().Name));
                     options.Add(o.GetType(), o);
                 }
             }
 
             if (this.args.Count == 0)
-                throw new SyntaxError("No arguments supplied");
+                throw new SyntaxException("No parameters supplied");
             else
             {
                 string commandName = this.args[0];

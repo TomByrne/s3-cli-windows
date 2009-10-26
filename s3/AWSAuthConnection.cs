@@ -19,23 +19,5 @@ namespace com.amazon.s3
                 headers.Add("Content-Type", mime);
             return headers;
         }
-
-        public IEnumerable<ListEntry> iterativeList(string bucket, string prefix)
-        {
-            string marker = "";
-
-            while (true)
-            {
-                ListBucketResponse listResp = listBucket(bucket, prefix, marker, 250, null);
-                listResp.Connection.Close();
-                foreach (ListEntry e in listResp.Entries)
-                    yield return e;
-
-                if (listResp.IsTruncated)
-                    marker = listResp.Entries[listResp.Entries.Count - 1].Key;
-                else
-                    yield break;
-            }
-        }
     }
 }

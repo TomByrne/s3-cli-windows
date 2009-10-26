@@ -20,7 +20,7 @@ namespace s3.Commands
             if (cl.args.Count == 1)
                 volumeId = cl.args[0].Trim();
             else
-                throw new SyntaxError("The snapshot command requires one argument");
+                throw new SyntaxException("The snapshot command requires one parameter");
         }
 
         public override void execute()
@@ -31,6 +31,14 @@ namespace s3.Commands
             Amazon.EC2.Model.CreateSnapshotResponse response = client.CreateSnapshot(request);
             string snapshotId = response.CreateSnapshotResult.Snapshot.SnapshotId;
             Console.WriteLine("Started snapshot of volume {0} with snapshot ID {1}", volumeId, snapshotId);
+        }
+
+        public override void displayHelp()
+        {
+            Console.Error.WriteLine(@"
+s3 snapshot <volumeID>
+    Starts an EBS snapshot.  Returns as soon as job begins.
+");
         }
     }
 }

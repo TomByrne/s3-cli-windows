@@ -37,7 +37,7 @@ namespace s3.Commands
                 }
             }
             else
-                throw new SyntaxError("The list command requires either zero or one arguments");
+                throw new SyntaxException("The list command requires either zero or one parameters");
         }
 
         public override void execute()
@@ -58,7 +58,7 @@ namespace s3.Commands
                     prefix = prefix.Substring(0, prefix.Length - 1);
 
                 int fileCount = 0;
-                foreach (ListEntry e in svc.iterativeList(bucket, prefix))
+                foreach (ListEntry e in new IterativeList(bucket, prefix))
                 {
                     Console.WriteLine(string.Format("{2}\t{1:0.0}M\t{0}", e.Key, e.Size / (1024 * 1024), e.LastModified));
                     fileCount++;
@@ -66,6 +66,18 @@ namespace s3.Commands
 
                 Console.WriteLine(string.Format("{0} files listed", fileCount));
             }
+        }
+
+        public override void displayHelp()
+        {
+            Console.Error.WriteLine(@"
+s3 list [<bucket>[/<keyprefix>]]
+Example:
+s3 list mybucket/pic*
+
+    Lists the keys in the bucket beginning with the keyprefix, if supplied.  A
+    trailing asterisk on the keyprefix is ignored.  With no parameters, gets 
+    the list of buckets.");
         }
     }
 }

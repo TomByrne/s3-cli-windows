@@ -28,7 +28,7 @@ namespace s3.Commands
                 secret = cl.args[1];
             }
             else
-                throw new SyntaxError("The auth command requires zero or two arguments");
+                throw new SyntaxException("The auth command requires zero or two parameters");
         }
 
         public override void execute()
@@ -49,6 +49,14 @@ namespace s3.Commands
             Settings.Default.AccessKeyId = key;
             Settings.Default.AccessKeySecret = secret;
             Settings.Default.Save();
+        }
+
+        public override void displayHelp()
+        {
+            Console.Error.WriteLine(@"
+s3 auth [<key> <secret>]
+    Prompts for authentication details or reads from command line if key and
+    secret are specified.");
         }
     }
 }

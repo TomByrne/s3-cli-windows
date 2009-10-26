@@ -22,17 +22,26 @@ namespace s3.Commands
 
         public abstract void execute();
 
-        public static void createInstance(string commandName, CommandLine commandLine)
+        public abstract void displayHelp();
+
+        protected static Command createInstance(string commandName)
         {
             foreach (Type c in allCommands)
                 if (c.Name.Equals(commandName, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    commandLine.command = (Command)Activator.CreateInstance(c);
-                    commandLine.command.initialise(commandLine);
-                    return;
+                    return (Command)Activator.CreateInstance(c);
                 }
 
-            throw new SyntaxError(string.Format("Unknown command: {0}", commandName));
+            return null;
+        }
+
+        public static void createInstance(string commandName, CommandLine commandLine)
+        {
+            commandLine.command = createInstance(commandName);
+            if (commandLine.command == null)
+                throw new SyntaxException(string.Format("Unknown command: {0}", commandName));
+            else
+                commandLine.command.initialise(commandLine);
         }
     }
 }

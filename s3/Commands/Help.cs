@@ -13,58 +13,68 @@ namespace s3.Commands
 {
     class Help : Command
     {
+        Command command = null;
+
         protected override void initialise(CommandLine cl)
         {
-            // does nothing
+            if (cl.args.Count > 0)
+                command = Command.createInstance(cl.args[0]);
         }
 
         public override void execute()
         {
-            Console.Error.WriteLine(
-@"s3 auth [<key> <secret>]
-    Prompts for authentication details or reads from command line if specified.
+            if (command == null)
+                displayHelp();
+            else
+                command.displayHelp();
+        }
 
-s3 put <bucket>[/<keyprefix>] <filename> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>]
-Example:
+        void writeHighlighted(string text)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Error.WriteLine(text);
+            Console.ResetColor();
+        }
+
+        public override void displayHelp()
+        {
+            Console.Error.WriteLine("Type 's3 help' followed by a command name for more details, e.g. 's3 help put'.");
+            Console.Error.WriteLine();
+            writeHighlighted("s3 auth [<key> <secret>]");
+            Console.Error.WriteLine("    Gets and saves your Amazon authentication details for future invocations.");
+            Console.Error.WriteLine();
+            writeHighlighted("s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes]");
+Console.Error.WriteLine(
+@"    Puts a file, files or an entire directory hierarchy to S3.  Big files can
+    be split up into smaller chunks (/big), the Windows archive flag can be 
+    honoured (/backup) and there is an option to upload only files modified
+    since last upload (/sync).  Type 's3 help put' for more details.
+
+Examples:
 s3 put mybucket pic*.jpg /acl:public-read
+s3 put mybucket/backup-pictures/ c:\mypictures\ /sub:withdelete /sync");
+            Console.Error.WriteLine();
+            writeHighlighted("s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub]");
+            Console.Error.WriteLine(
+@"    Gets an object or objects from S3.  Can join together files that have been
+    uploaded in chunks (/big) or download entire directory hierarchies (/sub).
+    Type 's3 help get' for more details.
 
-    Puts the specified filename to S3.  Wildcards are supported.  The filename
-    excluding path is suffixed to the end of the supplied key prefix, if any.
-
-    /big splits files into 10MB chunks suffixed with .000, .001 etc.  This is
-    done without creating any temporary files on disk.  A custom chunk size 
-    can be specified in MB, e.g. /big:0.1 creates chunks of about 100KB.
-
-    /backup causes only files with the archive attribute to be copied, and the
-    archive attribute is reset after copying.
-
-    /sync only uploads files that do not exist on S3 or have been modified
-    since last being uploaded. 
-
-    /acl sets the ACL.  To make files public use /acl:public-read
-
-s3 get <bucket>/<key> [<filename>] [/big]
-Example:
+Examples:
 s3 get mybucket/pic*
-    
-    Gets the specified object from S3. If no filename is supplied then the 
-    suffix of the key after the final slash is used as the filename.
+s3 get mybucket/backup-pictures/ /sub");
+            Console.Error.WriteLine();
+            writeHighlighted("s3 list [<bucket>[/<keyprefix>]]");
+            Console.Error.WriteLine(
+@"    Lists keys or buckets.  Type 's3 help list' for more details.
 
-    A trailing * on the end of the key is treated as a wildcard, except when 
-    the /big option or the <filename> is specified.
-
-    /big fetches a file or files split using /big with the put command.
-
-s3 list [<bucket>[/<keyprefix>]]
 Example:
-s3 list mybucket/pic*
-
-    Lists the keys in the bucket beginning with the keyprefix, if supplied.  A
-    trailing asterisk on the keyprefix is ignored.  With no parameters, gets 
-    the list of buckets.
-
-s3 snapshot <volumeID>
-    Starts an EBS snapshot.  Returns as soon as job begins.
+s3 list mybucket/pic*");
+            Console.Error.WriteLine();
+            writeHighlighted("s3 snapshot <volumeID>");
+            Console.Error.WriteLine(
+@"    Starts an EBS snapshot.  Returns as soon as job begins.
 
 Please blog or twitter about s3.exe if you find it useful.");
         }

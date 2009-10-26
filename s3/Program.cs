@@ -61,16 +61,16 @@ namespace s3
 
                 cl.command.execute();
             }
-            catch (SyntaxError ex)
+            catch (SyntaxException ex)
             {
-                Console.Error.WriteLine("Syntax error: {0}\nType 's3 help' for assistance.", ex.why);
+                Console.Error.WriteLine("Syntax error: {0}\nType 's3 help' for assistance.", ex.Message);
                 if (debugOption)
                     Console.Error.WriteLine(ex.StackTrace);
                 return 3;
             }
-            catch (NotFoundException ex)
+            catch (FileNotFoundException ex)
             {
-                Console.Error.WriteLine(string.Format("Not found: {0}", ex.what));
+                Console.Error.WriteLine(ex.Message);
                 if (debugOption)
                     Console.Error.WriteLine(ex.StackTrace);
                 return 2;
