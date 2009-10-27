@@ -45,16 +45,32 @@ namespace s3
             {
                 CommandLine cl = new CommandLine(originalArgs);
 
-                if ((Settings.Default.AccessKeyId == "" || Settings.Default.AccessKeySecret == "") && !(cl.command is Auth))
+                if (!(cl.command is Auth || cl.command is Help))
                 {
-                    string key = null, secret = null;
-                    Auth.getAuthInteractively(ref key, ref secret);
-                    Auth.saveAuth(key, secret);
+                    if (Settings.Default.AccessKeyId == "" || Settings.Default.AccessKeySecret == "")
+                    {
+                        Console.WriteLine(
+@"Your Amazon Access Key is required to access S3 and will be saved to your
+Windows user profile.  Optionally, you can specify a password for 128-bit 
+TripleDES encryption of the Secret Access Key, but that means entering the 
+password every time this program is run.
+
+You can obtain your Amazon Access Key from:
+https://aws-portal.amazon.com/gp/aws/developer/account/index.html?action=access-key
+
+If you need to remove your details from this computer in the future, run the
+s3 auth command and enter blank details.
+
+If you find s3.exe useful, please blog or twitter about it.  Thank you.
+");
+                        string key = null, secret = null, password = null;
+                        Auth.getAuthInteractively(ref key, ref secret, ref password);
+                        Auth.saveAuth(key, secret, password);
+                    }
+
+                    Auth.loadAuth(ref AWSAuthConnection.OUR_ACCESS_KEY_ID, ref AWSAuthConnection.OUR_SECRET_ACCESS_KEY);
                 }
 
-                AWSAuthConnection.OUR_ACCESS_KEY_ID = Settings.Default.AccessKeyId;
-                AWSAuthConnection.OUR_SECRET_ACCESS_KEY = Settings.Default.AccessKeySecret;
-                
                 debugOption = cl.options.ContainsKey(typeof(s3.Options.Verbose));
                 if (debugOption)
                     AWSAuthConnection.verbose = true;

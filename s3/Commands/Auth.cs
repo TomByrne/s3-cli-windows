@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Security;
+using System.Security.Cryptography;
 using System.Text;
 
 using com.amazon.s3;
@@ -14,14 +16,12 @@ namespace s3.Commands
 {
     class Auth : Command
     {
-        string key, secret;
+        string key, secret, password;
 
         protected override void initialise(CommandLine cl)
         {
             if (cl.args.Count == 0)
-            {
-                getAuthInteractively(ref key, ref secret);
-            }
+                getAuthInteractively(ref key, ref secret, ref password);
             else if (cl.args.Count == 2)
             {
                 key = cl.args[0];
@@ -33,21 +33,95 @@ namespace s3.Commands
 
         public override void execute()
         {
-            saveAuth(key, secret);
+            saveAuth(key, secret, password);
         }
 
-        public static void getAuthInteractively(ref string key, ref string secret)
+        public static void getAuthInteractively(ref string key, ref string secret, ref string password)
         {
+            Console.WriteLine("Do you want to encrypt your Secret Access Key with a password? (yes/no)");
+            if (Console.ReadLine().StartsWith("y", StringComparison.InvariantCultureIgnoreCase))
+            {
+                Console.Write("Please choose an encryption password: ");
+                password = readPassword();
+                Console.Write("Please enter your chosen password again: ");
+                string p2 = readPassword();
+                if (!password.Equals(p2))
+                    throw new Exception("Passwords don't match");
+            }
+            else
+                password = null;
+
             Console.Write("Enter your Access Key Id: ");
             key = Console.ReadLine().Trim();
-            Console.Write("Enter your Access Key Secret: ");
-            secret = Console.ReadLine().Trim();
+            Console.Write("Enter your Secret Access Key: ");
+            secret = readPassword();
         }
 
-        public static void saveAuth(string key, string secret)
+        public static string readPassword()
+        {
+            string password = "";
+
+            ConsoleKeyInfo info = Console.ReadKey(true);
+            while (info.Key != ConsoleKey.Enter)
+            {
+                if (!char.IsControl(info.KeyChar))
+                {
+                    password += info.KeyChar;
+                    Console.Write(".");
+                }
+                else if (info.Key == ConsoleKey.Backspace)
+                {
+                    if (!string.IsNullOrEmpty(password))
+                    {
+                        password = password.Substring
+                        (0, password.Length - 1);
+                        Console.Write("\b \b");
+                    }
+                }
+                info = Console.ReadKey(true);
+            }
+
+            Console.WriteLine();
+            return password.Trim();
+        }
+
+        public static void saveAuth(string key, string secret, string password)
         {
             Settings.Default.AccessKeyId = key;
-            Settings.Default.AccessKeySecret = secret;
+
+            if (password == null)
+            {
+                Settings.Default.AccessKeySecret = secret;
+                Settings.Default.Encrypted = false;
+            }
+            else
+            {
+                MD5CryptoServiceProvider HashProvider = new MD5CryptoServiceProvider();
+                byte[] TDESKey = HashProvider.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+                TripleDESCryptoServiceProvider TDESAlgorithm = new TripleDESCryptoServiceProvider();
+                TDESAlgorithm.Key = TDESKey;
+                TDESAlgorithm.Mode = CipherMode.ECB;
+                TDESAlgorithm.Padding = PaddingMode.PKCS7;
+
+                byte[] results;
+
+                try
+                {
+                    ICryptoTransform Encryptor = TDESAlgorithm.CreateEncryptor();
+                    byte[] data = Encoding.UTF8.GetBytes(secret);
+                    results = Encryptor.TransformFinalBlock(data, 0, data.Length);
+                }
+                finally
+                {
+                    TDESAlgorithm.Clear();
+                    HashProvider.Clear();
+                }
+
+                Settings.Default.AccessKeySecret = Convert.ToBase64String(results);
+                Settings.Default.Encrypted = true;
+            }
+
             Settings.Default.Save();
         }
 
@@ -57,6 +131,43 @@ namespace s3.Commands
 s3 auth [<key> <secret>]
     Prompts for authentication details or reads from command line if key and
     secret are specified.");
+        }
+
+        internal static void loadAuth(ref string id, ref string secret)
+        {
+            id = Settings.Default.AccessKeyId;
+
+            if (Settings.Default.Encrypted)
+            {
+                Console.Write("Please enter your encryption password: ");
+                string password = readPassword();
+
+                MD5CryptoServiceProvider HashProvider = new MD5CryptoServiceProvider();
+                byte[] TDESKey = HashProvider.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+                TripleDESCryptoServiceProvider TDESAlgorithm = new TripleDESCryptoServiceProvider();
+                TDESAlgorithm.Key = TDESKey;
+                TDESAlgorithm.Mode = CipherMode.ECB;
+                TDESAlgorithm.Padding = PaddingMode.PKCS7;
+
+                byte[] results;
+
+                try
+                {
+                    ICryptoTransform Decryptor = TDESAlgorithm.CreateDecryptor();
+                    byte[] data = Convert.FromBase64String(Settings.Default.AccessKeySecret);
+                    results = Decryptor.TransformFinalBlock(data, 0, data.Length);
+                }
+                finally
+                {
+                    TDESAlgorithm.Clear();
+                    HashProvider.Clear();
+                }
+
+                secret = Encoding.UTF8.GetString(results);
+            }
+            else
+                secret = Settings.Default.AccessKeySecret;
         }
     }
 }

@@ -58,5 +58,17 @@ namespace s3.Properties {
                 this["ApplicationVersion"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Encrypted {
+            get {
+                return ((bool)(this["Encrypted"]));
+            }
+            set {
+                this["Encrypted"] = value;
+            }
+        }
     }
 }
