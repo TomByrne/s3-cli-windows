@@ -21,14 +21,25 @@ namespace s3.Commands
 
         protected override void initialise(CommandLine cl)
         {
-            if (cl.args.Count != 2)
-                throw new SyntaxException("The put command requires two parameters");
+
+            if (cl.args.Count != 2) {
+                // TODO We should probably allow multiple file names on the command line
+                if (ExecutionEnvironment.IsLinux) {
+                    throw new SyntaxException("The put command requires two parameters. Did you remember to escape wildcard parameters?");
+                } else 
+                    throw new SyntaxException("The put command requires two parameters");
+            }
 
             keyArgument = cl.args[0];
             fileArgument = cl.args[1];
 
             acl = Acl.getOptionParameter(cl, typeof(Acl), false);
             backup = cl.options.ContainsKey(typeof(Backup));
+
+            if (backup && ExecutionEnvironment.IsLinux) {
+                throw new SyntaxException("The /backup option is not available on Linux");
+            }
+
             sync = cl.options.ContainsKey(typeof(Sync));
             big = cl.options.ContainsKey(typeof(Big));
             sub = cl.options.ContainsKey(typeof(Sub));
@@ -47,7 +58,7 @@ namespace s3.Commands
             int slashIdx = keyArgument.IndexOf("/");
             if (slashIdx == -1)
             {
-                baseKey = "";
+                baseKey = "";                        
                 bucket = keyArgument;
             }
             else
@@ -88,8 +99,8 @@ namespace s3.Commands
                 filename = fileArgument;
             }
 
-            if (!directory.EndsWith("\\"))
-                directory = string.Concat(directory, "\\");
+            if (!directory.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                directory = string.Concat(directory, Path.DirectorySeparatorChar.ToString());
 
             bool foundAnything = false;
 
@@ -180,7 +191,7 @@ s3 put mybucket/backup-pictures/ c:\mypictures\ /sub:withdelete /sync
     can be specified in MB, e.g. /big:0.1 creates chunks of about 100KB.
 
     /backup causes only files with the archive attribute to be copied, and the
-    archive attribute is reset after copying.
+    archive attribute is reset after copying (Windows only).
 
     /sync only uploads files that do not exist on S3 or have been modified
     since last being uploaded.  It can be used alone or in conjunction with the

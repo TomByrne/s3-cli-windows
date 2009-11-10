@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 
 using com.amazon.s3;
+using System.Collections;
 
 namespace s3.Options
 {
@@ -28,14 +29,35 @@ namespace s3.Options
 
         public static IEnumerable<string> getFiles(string directory, string pattern, bool recurse)
         {
-            FileDirectoryEnumerable fde = new FileDirectoryEnumerable();
-            fde.SearchPath = directory;
-            if (!string.IsNullOrEmpty(pattern))
-                fde.SearchPattern = pattern;
+            IEnumerable files = null;    
+            if (ExecutionEnvironment.IsMono) 
+            {
+                // if we're running on Mono, don't use the FileDirectoryEnumerable as it relies on win api's
+                List<string> fileList = new List<string>();
+                foreach (var file in Directory.GetFiles(directory, pattern)) 
+                {
+                    fileList.Add(file);
+                }
+                // TODO pattern should probably not apply to directories, but for consitency with the windows
+                // version, we're including it here for now
+                foreach (var dir in Directory.GetDirectories(directory, pattern)) 
+                {
+                    fileList.Add(dir);
+                }
+                files = fileList;
+            } 
+            else 
+            {
+                FileDirectoryEnumerable fde = new FileDirectoryEnumerable();
+                fde.SearchPath = directory;
+                if (!string.IsNullOrEmpty(pattern))
+                    fde.SearchPattern = pattern;
+                files = fde;
+            }
 
             List<string> subdirectories = new List<string>();
 
-            foreach (string f in fde)
+            foreach (string f in files)
             {
                 string fullPath = Path.Combine(directory, f);
 
@@ -45,8 +67,8 @@ namespace s3.Options
 
                 bool isDirectory = Directory.Exists(fullPath);
 
-                if (isDirectory && !fullPath.EndsWith("\\"))
-                    fullPath = string.Concat(fullPath, "\\");
+                if (isDirectory && !fullPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                    fullPath = string.Concat(fullPath, Path.DirectorySeparatorChar.ToString());
 
                 if (recurse && isDirectory)
                 {

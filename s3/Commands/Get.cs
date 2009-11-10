@@ -192,8 +192,8 @@ namespace s3.Commands
 
         private string keyToFilename(string key)
         {
-            string ret = key.Replace("/", "\\");
-            while (ret.StartsWith("\\"))
+            string ret = key.Replace("/", Path.DirectorySeparatorChar.ToString());
+            while (ret.StartsWith(Path.DirectorySeparatorChar.ToString()))
                 ret = ret.Substring(1);
             return ret;
         }
@@ -236,9 +236,9 @@ s3 get mybucket/backup-pictures/ /sub
     /big fetches a file or files split using /big with the put command.
 
     /sub causes all keys beginning with the specified keyprefix to be fetched
-    and forward slashes (/) in the key names are converted to backslashes (\\)
-    with directories being created as needed.  This enables a whole directory
-    hierarchy uploaded with 'put /sub' to be downloaded.
+    and forward slashes (/) in the key names used to create directories as
+    needed.  This enables a whole directory hierarchy uploaded with 'put /sub' 
+    to be downloaded.
 ");
         }
     }
