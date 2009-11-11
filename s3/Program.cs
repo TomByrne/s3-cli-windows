@@ -47,6 +47,15 @@ namespace s3
 
                 if (!(cl.command is Auth || cl.command is Help))
                 {
+
+                    if (cl.options.ContainsKey(typeof(s3.Options.AccessKey)) && cl.options.ContainsKey(typeof(s3.Options.SecretKey))) 
+                    {
+                        AccessKey accessKey = (AccessKey)cl.options[typeof(AccessKey)];
+                        SecretKey secretKey = (SecretKey)cl.options[typeof(SecretKey)];
+                        Settings.Default.AccessKeyId = accessKey.parameter;
+                        Settings.Default.AccessKeySecret = secretKey.parameter;
+                    }
+
                     if (Settings.Default.AccessKeyId == "" || Settings.Default.AccessKeySecret == "")
                     {
                         Console.WriteLine(

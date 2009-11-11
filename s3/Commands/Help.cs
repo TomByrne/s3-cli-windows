@@ -44,7 +44,7 @@ namespace s3.Commands
             writeHighlighted("s3 auth [<key> <secret>]");
             Console.Error.WriteLine("    Gets and saves your Amazon authentication details for future invocations.");
             Console.Error.WriteLine();
-            writeHighlighted("s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes]");
+            writeHighlighted("s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes] [/accesskey:<key> /secretkey:<secret>]");
 Console.Error.WriteLine(
 @"    Puts a file, files or an entire directory hierarchy to S3.  Big files can
     be split up into smaller chunks (/big), the Windows archive flag can be 
@@ -55,7 +55,7 @@ Examples:
 s3 put mybucket pic*.jpg /acl:public-read
 s3 put mybucket/backup-pictures/ c:\mypictures\ /sub:withdelete /sync");
             Console.Error.WriteLine();
-            writeHighlighted("s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub]");
+            writeHighlighted("s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub] [/accesskey:<key> /secretkey:<secret>]");
             Console.Error.WriteLine(
 @"    Gets an object or objects from S3.  Can join together files that have been
     uploaded in chunks (/big) or download entire directory hierarchies (/sub).
@@ -65,7 +65,7 @@ Examples:
 s3 get mybucket/pic*
 s3 get mybucket/backup-pictures/ /sub");
             Console.Error.WriteLine();
-            writeHighlighted("s3 list [<bucket>[/<keyprefix>]]");
+            writeHighlighted("s3 list [<bucket>[/<keyprefix>]] [/accesskey:<key> /secretkey:<secret>]");
             Console.Error.WriteLine(
 @"    Lists keys or buckets.  Type 's3 help list' for more details.
 
@@ -76,7 +76,7 @@ s3 list mybucket/pic*");
             Console.Error.WriteLine(
 @"    Lists the current EC2 instances on a per-AMI basis.");
             Console.Error.WriteLine();
-            writeHighlighted("s3 snapshot <volumeID>");
+            writeHighlighted("s3 snapshot <volumeID> [/accesskey:<key> /secretkey:<secret>]");
             Console.Error.WriteLine(
 @"    Starts an EBS snapshot.  Returns as soon as job begins.
 

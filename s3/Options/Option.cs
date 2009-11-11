@@ -21,7 +21,9 @@ namespace s3.Options
             typeof(Sub),
             typeof(Sync), 
             typeof(Verbose),
-            typeof(Yes)
+            typeof(Yes),
+            typeof(AccessKey),
+            typeof(SecretKey)
         };
 
         /// <summary>
