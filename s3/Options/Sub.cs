@@ -38,9 +38,7 @@ namespace s3.Options
                 {
                     fileList.Add(file);
                 }
-                // TODO pattern should probably not apply to directories, but for consitency with the windows
-                // version, we're including it here for now
-                foreach (var dir in Directory.GetDirectories(directory, pattern))
+                foreach (var dir in Directory.GetDirectories(directory))
                 {
                     fileList.Add(dir);
                 }
