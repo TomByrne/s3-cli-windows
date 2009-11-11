@@ -121,7 +121,7 @@ If you find s3.exe useful, please blog or twitter about it.  Thank you.
                             Console.Error.WriteLine(ex.StackTrace);
                         }
                     }
-                    catch (InvalidOperationException)
+                    catch 
                     {
                         // couldn't read XML so fall back to displaying the whole Message string from the original exception
                         Console.Error.WriteLine(ex.Message);
