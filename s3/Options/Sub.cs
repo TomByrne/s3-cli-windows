@@ -29,24 +29,24 @@ namespace s3.Options
 
         public static IEnumerable<string> getFiles(string directory, string pattern, bool recurse)
         {
-            IEnumerable files = null;    
-            if (ExecutionEnvironment.IsMono) 
+            IEnumerable files = null;
+            if (ExecutionEnvironment.IsMono)
             {
                 // if we're running on Mono, don't use the FileDirectoryEnumerable as it relies on win api's
                 List<string> fileList = new List<string>();
-                foreach (var file in Directory.GetFiles(directory, pattern)) 
+                foreach (var file in Directory.GetFiles(directory, pattern))
                 {
                     fileList.Add(file);
                 }
                 // TODO pattern should probably not apply to directories, but for consitency with the windows
                 // version, we're including it here for now
-                foreach (var dir in Directory.GetDirectories(directory, pattern)) 
+                foreach (var dir in Directory.GetDirectories(directory, pattern))
                 {
                     fileList.Add(dir);
                 }
                 files = fileList;
-            } 
-            else 
+            }
+            else
             {
                 FileDirectoryEnumerable fde = new FileDirectoryEnumerable();
                 fde.SearchPath = directory;

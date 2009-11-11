@@ -220,8 +220,8 @@ namespace s3.Commands
 
         public override void displayHelp()
         {
-            Console.Error.WriteLine(@"
-s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub]
+            Console.Error.WriteLine(
+@"s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub]
 Examples:
 s3 get mybucket/pic*
 s3 get mybucket/backup-pictures/ /sub

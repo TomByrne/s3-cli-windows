@@ -13,6 +13,7 @@ namespace s3.Commands
             typeof(Auth),
             typeof(Get),
             typeof(Help),
+            typeof(Instances),
             typeof(List),
             typeof(Put),
             typeof(Snapshot)

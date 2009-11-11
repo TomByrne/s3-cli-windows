@@ -473,6 +473,7 @@
     <Compile Include="CommandLine.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\Auth.cs" />
+    <Compile Include="Commands\Instances.cs" />
     <Compile Include="Commands\Snapshot.cs" />
     <Compile Include="Commands\List.cs" />
     <Compile Include="Commands\Get.cs" />
@@ -511,6 +512,14 @@
     <EmbeddedResource Include="..\Amazon.EC2\Amazon.EC2\Model\CreateSnapshotResponse.xslt">
       <Link>Amazon.EC2\Model\CreateSnapshotResponse.xslt</Link>
       <LogicalName>CreateSnapshotResponse.xslt</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeInstancesResponse.xslt">
+      <Link>Amazon.EC2\Model\DescribeInstancesResponse.xslt</Link>
+      <LogicalName>DescribeInstancesResponse.xslt</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Amazon.EC2\Amazon.EC2\Model\DescribeImagesResponse.xslt">
+      <Link>Amazon.EC2\Model\DescribeImagesResponse.xslt</Link>
+      <LogicalName>DescribeImagesResponse.xslt</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

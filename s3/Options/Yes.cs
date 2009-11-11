@@ -10,8 +10,7 @@ namespace s3.Options
 
         public Yes()
         {
-            Console.WriteLine("The /yes option is not supported in the beta version, to avoid accidental deletions.");
-            yesToAll = false;  // change to true on release
+            yesToAll = true;
         }
 
         static internal bool confirm(string prompt)

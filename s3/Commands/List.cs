@@ -70,8 +70,8 @@ namespace s3.Commands
 
         public override void displayHelp()
         {
-            Console.Error.WriteLine(@"
-s3 list [<bucket>[/<keyprefix>]]
+            Console.Error.WriteLine(
+@"s3 list [<bucket>[/<keyprefix>]]
 Example:
 s3 list mybucket/pic*
 

@@ -72,6 +72,10 @@ s3 get mybucket/backup-pictures/ /sub");
 Example:
 s3 list mybucket/pic*");
             Console.Error.WriteLine();
+            writeHighlighted("s3 instances");
+            Console.Error.WriteLine(
+@"    Lists the current EC2 instances on a per-AMI basis.");
+            Console.Error.WriteLine();
             writeHighlighted("s3 snapshot <volumeID>");
             Console.Error.WriteLine(
 @"    Starts an EBS snapshot.  Returns as soon as job begins.

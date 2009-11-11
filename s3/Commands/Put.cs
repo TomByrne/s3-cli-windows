@@ -21,12 +21,12 @@ namespace s3.Commands
 
         protected override void initialise(CommandLine cl)
         {
-
-            if (cl.args.Count != 2) {
+            if (cl.args.Count != 2)
+            {
                 // TODO We should probably allow multiple file names on the command line
-                if (ExecutionEnvironment.IsLinux) {
+                if (ExecutionEnvironment.IsLinux)
                     throw new SyntaxException("The put command requires two parameters. Did you remember to escape wildcard parameters?");
-                } else 
+                else
                     throw new SyntaxException("The put command requires two parameters");
             }
 
@@ -35,11 +35,6 @@ namespace s3.Commands
 
             acl = Acl.getOptionParameter(cl, typeof(Acl), false);
             backup = cl.options.ContainsKey(typeof(Backup));
-
-            if (backup && ExecutionEnvironment.IsLinux) {
-                throw new SyntaxException("The /backup option is not available on Linux");
-            }
-
             sync = cl.options.ContainsKey(typeof(Sync));
             big = cl.options.ContainsKey(typeof(Big));
             sub = cl.options.ContainsKey(typeof(Sub));
@@ -58,7 +53,7 @@ namespace s3.Commands
             int slashIdx = keyArgument.IndexOf("/");
             if (slashIdx == -1)
             {
-                baseKey = "";                        
+                baseKey = "";
                 bucket = keyArgument;
             }
             else
@@ -176,8 +171,8 @@ namespace s3.Commands
 
         public override void displayHelp()
         {
-            Console.Error.WriteLine(@"
-s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes]
+            Console.Error.WriteLine(
+@"s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes]
 Examples:
 s3 put mybucket pic*.jpg /acl:public-read
 s3 put mybucket/backup-pictures/ c:\mypictures\ /sub:withdelete /sync

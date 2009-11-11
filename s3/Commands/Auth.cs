@@ -127,8 +127,8 @@ namespace s3.Commands
 
         public override void displayHelp()
         {
-            Console.Error.WriteLine(@"
-s3 auth [<key> <secret>]
+            Console.Error.WriteLine(
+@"s3 auth [<key> <secret>]
     Prompts for authentication details or reads from command line if key and
     secret are specified.");
         }
@@ -157,6 +157,10 @@ s3 auth [<key> <secret>]
                     ICryptoTransform Decryptor = TDESAlgorithm.CreateDecryptor();
                     byte[] data = Convert.FromBase64String(Settings.Default.AccessKeySecret);
                     results = Decryptor.TransformFinalBlock(data, 0, data.Length);
+                }
+                catch (CryptographicException ex)
+                {
+                    throw new Exception("Wrong password, or other cryptographic error", ex);
                 }
                 finally
                 {
