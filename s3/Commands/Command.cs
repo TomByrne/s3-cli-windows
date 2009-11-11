@@ -23,7 +23,7 @@ namespace s3.Commands
 
         public abstract void execute();
 
-        public abstract void displayHelp();
+        public abstract string[] getHelpText();
 
         protected static Command createInstance(string commandName)
         {

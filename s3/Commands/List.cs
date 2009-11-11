@@ -68,16 +68,16 @@ namespace s3.Commands
             }
         }
 
-        public override void displayHelp()
+        public override string[] getHelpText()
         {
-            Console.Error.WriteLine(
+           return new string[] {
 @"s3 list [<bucket>[/<keyprefix>]]
 Example:
 s3 list mybucket/pic*
 
     Lists the keys in the bucket beginning with the keyprefix, if supplied.  A
     trailing asterisk on the keyprefix is ignored.  With no parameters, gets 
-    the list of buckets.");
+    the list of buckets."};
         }
     }
 }

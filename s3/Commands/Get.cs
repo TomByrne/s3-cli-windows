@@ -218,13 +218,13 @@ namespace s3.Commands
             }
         }
 
-        public override void displayHelp()
+        public override string[] getHelpText()
         {
-            Console.Error.WriteLine(
+            return new string[] {
 @"s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub]
 Examples:
 s3 get mybucket/pic*
-s3 get mybucket/backup-pictures/ /sub
+s3 get mybucket/pictures/ /sub
     
     Gets the specified object(s) from S3. If no filename is supplied then the
     suffix of the key after the final slash is used as the filename, except
@@ -239,7 +239,7 @@ s3 get mybucket/backup-pictures/ /sub
     and forward slashes (/) in the key names used to create directories as
     needed.  This enables a whole directory hierarchy uploaded with 'put /sub' 
     to be downloaded.
-");
+"};
         }
     }
 }

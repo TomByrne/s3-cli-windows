@@ -33,12 +33,12 @@ namespace s3.Commands
             Console.WriteLine("Started snapshot of volume {0} with snapshot ID {1}", volumeId, snapshotId);
         }
 
-        public override void displayHelp()
+        public override string[] getHelpText()
         {
-            Console.Error.WriteLine(@"
+            return new string[] {@"
 s3 snapshot <volumeID>
     Starts an EBS snapshot.  Returns as soon as job begins.
-");
+"};
         }
     }
 }

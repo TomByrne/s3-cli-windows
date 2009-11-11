@@ -169,13 +169,14 @@ namespace s3.Commands
                 Sub.deleteKeys(directory, bucket, baseKey);
         }
 
-        public override void displayHelp()
+        public override string[] getHelpText()
         {
-            Console.Error.WriteLine(
+
+            return new string[] { 
 @"s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes]
 Examples:
 s3 put mybucket pic*.jpg /acl:public-read
-s3 put mybucket/backup-pictures/ c:\mypictures\ /sub:withdelete /sync
+s3 put mybucket/pictures/ c:\mypictures\ /sub:withdelete /sync
 
     Puts the file(s) specified by the path to S3.  Wildcards are supported.
     The filename excluding path is suffixed to the end of the supplied key 
@@ -200,7 +201,7 @@ s3 put mybucket/backup-pictures/ c:\mypictures\ /sub:withdelete /sync
     with the given keyprefix (if provided) but don't correspond to a local
     file.
 
-    /yes surpresses prompting on each delete with the /sub:withdelete option.");
+    /yes surpresses prompting on each delete with the /sub:withdelete option."};
         }
     }
 }

@@ -13,7 +13,7 @@ namespace s3.Options
         /// A list of all the supported command-line options.  To add support for a new option,
         /// simply add an instance of a new type to the list.
         /// </summary>
-        static List<Type> allOptions = new List<Type>() 
+        public static List<Type> AllOptions = new List<Type>() 
         { 
             typeof(Acl), 
             typeof(Backup), 
@@ -36,7 +36,15 @@ namespace s3.Options
                 throw new SyntaxException(string.Format("The {0} option does not accept a parameter", GetType().Name));
         }
 
-        const string optionPrefix = "/";
+        public static string OptionPrefix {
+            get {
+                if (ExecutionEnvironment.IsLinux) {
+                    return "--";
+                } else
+                    return "/";
+            }
+        }
+
         const char parameterSeparator = ':';
 
         /// <summary>
@@ -46,7 +54,7 @@ namespace s3.Options
         /// <returns>An instance of the appropriate Option, or null on failure</returns>
         public static Option fromString(string option)
         {
-            if (option.StartsWith(optionPrefix))
+            if (option.StartsWith(OptionPrefix))
             {
                 int separatorPosition = option.IndexOf(parameterSeparator);
 
@@ -58,11 +66,11 @@ namespace s3.Options
                 }
                 else
                 {
-                    optionName = option.Substring(1, separatorPosition - 1);
+                    optionName = option.Substring(OptionPrefix.Length, separatorPosition - OptionPrefix.Length);
                     parameter = option.Substring(separatorPosition + 1);
                 }
 
-                foreach (Type o in allOptions)
+                foreach (Type o in AllOptions)
                     if (o.Name.Equals(optionName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         Option optionObject = (Option)Activator.CreateInstance(o);

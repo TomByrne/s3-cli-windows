@@ -71,12 +71,12 @@ namespace s3.Commands
             }
         }
 
-        public override void displayHelp()
+        public override string[] getHelpText()
         {
-            Console.WriteLine(
+            return new string[] {
 @"s3 instances
 
-    Lists the current EC2 instances on a per-AMI basis.");
+    Lists the current EC2 instances on a per-AMI basis."};
         }
     }
 }
