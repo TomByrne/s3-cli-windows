@@ -6,10 +6,14 @@ namespace s3.Options
 {
     class Backup : Option
     {
-        Backup()
-        {
+
+        protected override void initialise(string parameter) {
+
             if (ExecutionEnvironment.IsLinux)
                 throw new SyntaxException("The /backup option is not available on Linux");
-        }
+            
+            base.initialise(parameter);
+        } 
+
     }
 }
