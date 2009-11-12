@@ -20,6 +20,7 @@ namespace s3.Commands
 
         protected override void Initialise(CommandLine cl)
         {
+
             if (cl.args.Count == 0)
                 GetAuthInteractively(ref key, ref secret, ref password);
             else if (cl.args.Count == 2)

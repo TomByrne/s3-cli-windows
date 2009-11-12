@@ -480,7 +480,7 @@
     <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\Put.cs" />
     <Compile Include="IterativeList.cs" />
-    <Compile Include="ExecutionEnvironment.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="Options\Key.cs" />
     <Compile Include="Options\Yes.cs" />
     <Compile Include="SyntaxException.cs" />

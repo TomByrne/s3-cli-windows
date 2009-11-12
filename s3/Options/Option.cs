@@ -38,7 +38,7 @@ namespace s3.Options
 
         public static string OptionPrefix {
             get {
-                if (ExecutionEnvironment.IsLinux) {
+                if (Utils.IsLinux) {
                     return "--";
                 } else
                     return "/";

@@ -9,7 +9,7 @@ namespace s3.Options
 
         protected override void Initialise(string parameter) {
 
-            if (ExecutionEnvironment.IsLinux)
+            if (Utils.IsLinux)
                 throw new SyntaxException("The /backup option is not available on Linux");
             
             base.Initialise(parameter);
