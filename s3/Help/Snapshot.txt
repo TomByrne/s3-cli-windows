@@ -1,2 +1,6 @@
-﻿*s3 snapshot <volumeID>
+﻿*s3 snapshot <volumeID> [/key:<key> /secret:<secret>]
+    
     Starts an EBS snapshot.  Returns as soon as job begins.
+    
+    /key & /secret let you to pass the Amazon S3 access key and secret key
+    on the command line (even if you've previously used auth).    

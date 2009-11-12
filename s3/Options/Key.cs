@@ -4,10 +4,10 @@ using System.Text;
 
 namespace s3.Options
 {
-    class AccessKey : OptionWithParameter<string>
+    class Key : OptionWithParameter<string>
     {
 
-        public AccessKey() {
+        public Key() {
         }
 
         protected override bool ParameterIsCompulsory {
@@ -16,9 +16,9 @@ namespace s3.Options
 
     }
 
-    class SecretKey : OptionWithParameter<string> {
+    class Secret : OptionWithParameter<string> {
 
-        public SecretKey() {
+        public Secret() {
         }
 
         protected override bool ParameterIsCompulsory {

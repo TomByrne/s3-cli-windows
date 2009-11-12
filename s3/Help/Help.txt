@@ -3,35 +3,35 @@
 *s3 auth [<key> <secret>]
     Gets and saves your Amazon authentication details for future invocations.
     
-*s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes] [/accesskey:<key> /secretkey:<secret>]
+*s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes] [/key:<key> /secret:<secret>]
     Puts a file, files or an entire directory hierarchy to S3.  Big files can
     be split up into smaller chunks (/big), the Windows archive flag can be 
     honoured (/backup) and there is an option to upload only files modified
     since last upload (/sync).  Type 's3 help put' for more details.
 
 Examples:
-    s3 put mybucket pic*.jpg /acl:public-read
-    s3 put mybucket/pictures/ c:\mypictures\ /sub:withdelete /sync
+s3 put mybucket pic*.jpg /acl:public-read
+s3 put mybucket/pictures/ c:\mypictures\ /sub:withdelete /sync
            
-*s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub] [/accesskey:<key> /secretkey:<secret>]
+*s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub] [/key:<key> /secret:<secret>]
     Gets an object or objects from S3.  Can join together files that have been
     uploaded in chunks (/big) or download entire directory hierarchies (/sub).
     Type 's3 help get' for more details.
 
 Examples:
-    s3 get mybucket/pic*
-    s3 get mybucket/pictures/ /sub
+s3 get mybucket/pic*
+s3 get mybucket/pictures/ /sub
             
-*s3 list [<bucket>[/<keyprefix>]] [/accesskey:<key> /secretkey:<secret>]
+*s3 list [<bucket>[/<keyprefix>]] [/key:<key> /secret:<secret>]
     Lists keys or buckets.  Type 's3 help list' for more details.
 
 Example:
-    s3 list mybucket/pic
+s3 list mybucket/pic [/key:<key> /secret:<secret>]
             
-*s3 instances
+*s3 instances [/key:<key> /secret:<secret>]
     Lists the current EC2 instances on a per-AMI basis.
     
-*s3 snapshot <volumeID> [/accesskey:<key> /secretkey:<secret>]
+*s3 snapshot <volumeID> [/key:<key> /secret:<secret>]
     Starts an EBS snapshot.  Returns as soon as job begins.
 
 Please blog or twitter about s3.exe if you find it useful.

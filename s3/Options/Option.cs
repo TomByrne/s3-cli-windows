@@ -22,8 +22,8 @@ namespace s3.Options
             typeof(Sync), 
             typeof(Verbose),
             typeof(Yes),
-            typeof(AccessKey),
-            typeof(SecretKey)
+            typeof(Key),
+            typeof(Secret)
         };
 
         /// <summary>

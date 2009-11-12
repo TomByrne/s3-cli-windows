@@ -1,3 +1,6 @@
-﻿*s3 instances
+﻿*s3 instances [/key:<key> /secret:<secret>]
 
     Lists the current EC2 instances on a per-AMI basis.
+
+    /key & /secret let you to pass the Amazon S3 access key and secret key
+    on the command line (even if you've previously used auth).

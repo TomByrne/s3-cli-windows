@@ -1,8 +1,9 @@
-﻿*s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes]
+﻿*s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] 
+        [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes] [/key:<key> /secret:<secret>]
 
 Examples:
-	s3 put mybucket pic*.jpg /acl:public-read
-	s3 put mybucket/pictures/ c:\mypictures\ /sub:withdelete /sync
+s3 put mybucket pic*.jpg /acl:public-read
+s3 put mybucket/pictures/ c:\mypictures\ /sub:withdelete /sync
 
     Puts the file(s) specified by the path to S3.  Wildcards are supported.
     The filename excluding path is suffixed to the end of the supplied key 
@@ -28,3 +29,6 @@ Examples:
     file.
 
     /yes surpresses prompting on each delete with the /sub:withdelete option.
+    
+    /key & /secret let you to pass the Amazon S3 access key and secret key
+    on the command line (even if you've previously used auth).    
