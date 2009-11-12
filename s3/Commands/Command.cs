@@ -23,8 +23,6 @@ namespace s3.Commands
 
         public abstract void execute();
 
-        public abstract string[] getHelpText();
-
         protected static Command createInstance(string commandName)
         {
             foreach (Type c in allCommands)

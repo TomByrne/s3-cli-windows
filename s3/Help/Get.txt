@@ -1,0 +1,19 @@
+﻿*s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub]
+
+Examples:
+	s3 get mybucket/pic*
+	s3 get mybucket/pictures/ /sub
+    
+    Gets the specified object(s) from S3. If no filename is supplied then the
+    suffix of the key after the final slash is used as the filename, except
+    with the /sub option (see below).
+
+    A trailing * on the end of the key is treated as a wildcard, except when 
+    the /big option or a full <filename> is specified.
+
+    /big fetches a file or files split using /big with the put command.
+
+    /sub causes all keys beginning with the specified keyprefix to be fetched
+    and forward slashes (/) in the key names used to create directories as
+    needed.  This enables a whole directory hierarchy uploaded with 'put /sub' 
+    to be downloaded.

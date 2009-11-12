@@ -125,14 +125,6 @@ namespace s3.Commands
             Settings.Default.Save();
         }
 
-        public override string[] getHelpText()
-        {
-            return new string[] {
-@"s3 auth [<key> <secret>]
-    Prompts for authentication details or reads from command line if key and
-    secret are specified."};
-        }
-
         internal static void loadAuth(ref string id, ref string secret)
         {
             id = Settings.Default.AccessKeyId;

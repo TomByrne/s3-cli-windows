@@ -168,40 +168,6 @@ namespace s3.Commands
             if (sub && subWithDelete)
                 Sub.deleteKeys(directory, bucket, baseKey);
         }
-
-        public override string[] getHelpText()
-        {
-
-            return new string[] { 
-@"s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes]
-Examples:
-s3 put mybucket pic*.jpg /acl:public-read
-s3 put mybucket/pictures/ c:\mypictures\ /sub:withdelete /sync
-
-    Puts the file(s) specified by the path to S3.  Wildcards are supported.
-    The filename excluding path is suffixed to the end of the supplied key 
-    prefix, if any.
-
-    /big splits files into 10MB chunks suffixed with .000, .001 etc.  This is
-    done without creating any temporary files on disk.  A custom chunk size 
-    can be specified in MB, e.g. /big:0.1 creates chunks of about 100KB.
-
-    /backup causes only files with the archive attribute to be copied, and the
-    archive attribute is reset after copying (Windows only).
-
-    /sync only uploads files that do not exist on S3 or have been modified
-    since last being uploaded.  It can be used alone or in conjunction with the
-    /sub option for a fast incremental backup of a whole directory.
-
-    /acl sets the ACL.  To make files public use /acl:public-read
-
-    /sub copies an entire directory hierarchy.  The keyprefix must be absent or
-    end with a slash (/), and the path can be an existing directory.  The
-    /sub:withdelete option does the same but also deletes keys on S3 that start
-    with the given keyprefix (if provided) but don't correspond to a local
-    file.
-
-    /yes surpresses prompting on each delete with the /sub:withdelete option."};
-        }
+      
     }
 }

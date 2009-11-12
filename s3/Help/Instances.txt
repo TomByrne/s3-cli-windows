@@ -1,0 +1,3 @@
+﻿*s3 instances
+
+    Lists the current EC2 instances on a per-AMI basis.

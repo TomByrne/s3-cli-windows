@@ -1,0 +1,3 @@
+﻿*s3 auth [<key> <secret>]
+    Prompts for authentication details or reads from command line if key and
+    secret are specified.
