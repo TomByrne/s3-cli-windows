@@ -61,7 +61,7 @@ namespace s3.Options
                 string optionName, parameter;
                 if (separatorPosition == -1)
                 {
-                    optionName = option.Substring(1);
+                    optionName = option.Substring(OptionPrefix.Length);
                     parameter = null;
                 }
                 else
