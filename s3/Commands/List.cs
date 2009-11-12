@@ -16,7 +16,7 @@ namespace s3.Commands
         bool listBuckets = false;
         string bucket, prefix;
 
-        protected override void initialise(CommandLine cl)
+        protected override void Initialise(CommandLine cl)
         {
             if (cl.args.Count == 0)
             {
@@ -40,7 +40,7 @@ namespace s3.Commands
                 throw new SyntaxException("The list command requires either zero or one parameters");
         }
 
-        public override void execute()
+        public override void Execute()
         {
             AWSAuthConnection svc = new AWSAuthConnection();
 

@@ -17,9 +17,9 @@ namespace s3.Commands
     {
         bool ips = false;
 
-        protected override void initialise(CommandLine commandLine) { }
+        protected override void Initialise(CommandLine commandLine) { }
 
-        public override void execute()
+        public override void Execute()
         {
             AmazonEC2Client client = new AmazonEC2Client(AWSAuthConnection.OUR_ACCESS_KEY_ID, AWSAuthConnection.OUR_SECRET_ACCESS_KEY);
             DescribeInstancesRequest request = new DescribeInstancesRequest();

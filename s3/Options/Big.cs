@@ -9,17 +9,17 @@ namespace s3.Options
         private const double defaultChunkMegabytes = 10;
         public double chunkMegabytes = defaultChunkMegabytes;
 
-        protected override bool parameterIsCompulsory
+        protected override bool ParameterIsCompulsory
         {
             get { return false; }
         }
 
-        protected override void parameterIsSet()
+        protected override void ParameterIsSet()
         {
-            if (parameter <= 0)
+            if (Parameter <= 0)
                 throw new SyntaxException("The paramter to the /big option must be greater than zero");
 
-            chunkMegabytes = parameter;
+            chunkMegabytes = Parameter;
         }
     }
 }

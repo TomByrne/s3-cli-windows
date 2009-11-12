@@ -19,11 +19,11 @@ namespace s3.Commands
             typeof(Snapshot)
         };
 
-        protected abstract void initialise(CommandLine commandLine);
+        protected abstract void Initialise(CommandLine commandLine);
 
-        public abstract void execute();
+        public abstract void Execute();
 
-        protected static Command createInstance(string commandName)
+        protected static Command CreateInstance(string commandName)
         {
             foreach (Type c in allCommands)
                 if (c.Name.Equals(commandName, StringComparison.InvariantCultureIgnoreCase))
@@ -34,13 +34,13 @@ namespace s3.Commands
             return null;
         }
 
-        public static void createInstance(string commandName, CommandLine commandLine)
+        public static void CreateInstance(string commandName, CommandLine commandLine)
         {
-            commandLine.command = createInstance(commandName);
+            commandLine.command = CreateInstance(commandName);
             if (commandLine.command == null)
                 throw new SyntaxException(string.Format("Unknown command: {0}", commandName));
             else
-                commandLine.command.initialise(commandLine);
+                commandLine.command.Initialise(commandLine);
         }
     }
 }

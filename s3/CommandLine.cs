@@ -17,7 +17,7 @@ namespace s3
         {
             foreach (string a in args)
             {
-                Option o = Option.fromString(a);
+                Option o = Option.FromString(a);
 
                 if (o == null)
                     this.args.Add(a);
@@ -35,7 +35,7 @@ namespace s3
             {
                 string commandName = this.args[0];
                 this.args.RemoveAt(0);
-                Command.createInstance(commandName, this);
+                Command.CreateInstance(commandName, this);
             }
         }
     }

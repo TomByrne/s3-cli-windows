@@ -19,7 +19,7 @@ namespace s3.Commands
         string keyArgument, fileArgument;
         string bucket, baseKey;
 
-        protected override void initialise(CommandLine cl)
+        protected override void Initialise(CommandLine cl)
         {
             if (cl.args.Count != 2)
             {
@@ -33,7 +33,7 @@ namespace s3.Commands
             keyArgument = cl.args[0];
             fileArgument = cl.args[1];
 
-            acl = Acl.getOptionParameter(cl, typeof(Acl), false);
+            acl = Acl.GetOptionParameter(cl, typeof(Acl), false);
             backup = cl.options.ContainsKey(typeof(Backup));
             sync = cl.options.ContainsKey(typeof(Sync));
             big = cl.options.ContainsKey(typeof(Big));
@@ -66,10 +66,10 @@ namespace s3.Commands
             }
         }
 
-        public override void execute()
+        public override void Execute()
         {
             AWSAuthConnection svc = new AWSAuthConnection();
-            SortedList headers = AWSAuthConnection.getHeaders(acl, null);
+            SortedList headers = AWSAuthConnection.GetHeaders(acl, null);
 
             string directory, filename;
 
@@ -99,7 +99,7 @@ namespace s3.Commands
 
             bool foundAnything = false;
 
-            foreach (string file in Sub.getFiles(directory, filename, sub))
+            foreach (string file in Sub.GetFiles(directory, filename, sub))
             {
                 foundAnything = true;
 

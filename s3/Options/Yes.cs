@@ -13,7 +13,7 @@ namespace s3.Options
             yesToAll = true;
         }
 
-        static internal bool confirm(string prompt)
+        static internal bool Confirm(string prompt)
         {
             if (yesToAll)
                 return true;

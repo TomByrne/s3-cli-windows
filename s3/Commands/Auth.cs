@@ -18,10 +18,10 @@ namespace s3.Commands
     {
         string key, secret, password;
 
-        protected override void initialise(CommandLine cl)
+        protected override void Initialise(CommandLine cl)
         {
             if (cl.args.Count == 0)
-                getAuthInteractively(ref key, ref secret, ref password);
+                GetAuthInteractively(ref key, ref secret, ref password);
             else if (cl.args.Count == 2)
             {
                 key = cl.args[0];
@@ -31,20 +31,20 @@ namespace s3.Commands
                 throw new SyntaxException("The auth command requires zero or two parameters");
         }
 
-        public override void execute()
+        public override void Execute()
         {
-            saveAuth(key, secret, password);
+            SaveAuth(key, secret, password);
         }
 
-        public static void getAuthInteractively(ref string key, ref string secret, ref string password)
+        public static void GetAuthInteractively(ref string key, ref string secret, ref string password)
         {
             Console.WriteLine("Do you want to encrypt your Secret Access Key with a password? (yes/no)");
             if (Console.ReadLine().StartsWith("y", StringComparison.InvariantCultureIgnoreCase))
             {
                 Console.Write("Please choose an encryption password: ");
-                password = readPassword();
+                password = ReadPassword();
                 Console.Write("Please enter your chosen password again: ");
-                string p2 = readPassword();
+                string p2 = ReadPassword();
                 if (!password.Equals(p2))
                     throw new Exception("Passwords don't match");
             }
@@ -54,10 +54,10 @@ namespace s3.Commands
             Console.Write("Enter your Access Key Id: ");
             key = Console.ReadLine().Trim();
             Console.Write("Enter your Secret Access Key: ");
-            secret = readPassword();
+            secret = ReadPassword();
         }
 
-        public static string readPassword()
+        public static string ReadPassword()
         {
             string password = "";
 
@@ -85,7 +85,7 @@ namespace s3.Commands
             return password.Trim();
         }
 
-        public static void saveAuth(string key, string secret, string password)
+        public static void SaveAuth(string key, string secret, string password)
         {
             Settings.Default.AccessKeyId = key;
 
@@ -125,14 +125,14 @@ namespace s3.Commands
             Settings.Default.Save();
         }
 
-        internal static void loadAuth(ref string id, ref string secret)
+        internal static void LoadAuth(ref string id, ref string secret)
         {
             id = Settings.Default.AccessKeyId;
 
             if (Settings.Default.Encrypted)
             {
                 Console.Write("Please enter your encryption password: ");
-                string password = readPassword();
+                string password = ReadPassword();
 
                 MD5CryptoServiceProvider HashProvider = new MD5CryptoServiceProvider();
                 byte[] TDESKey = HashProvider.ComputeHash(Encoding.UTF8.GetBytes(password));

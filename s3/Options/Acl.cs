@@ -6,7 +6,7 @@ namespace s3.Options
 {
     class Acl : OptionWithParameter<string>
     {
-        protected override bool parameterIsCompulsory
+        protected override bool ParameterIsCompulsory
         {
             get { return true; }
         }

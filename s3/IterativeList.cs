@@ -43,7 +43,7 @@ namespace s3
             this.prefix = prefix;
             this.regex = null;
             iterator = iterativeList();
-            resp = fetchBatch();
+            resp = FetchBatch();
 
             if (resp.Entries.Count == 0)
                 Count = EntryCount.zero;
@@ -69,7 +69,7 @@ namespace s3
                 if (resp.IsTruncated)
                 {
                     marker = resp.Entries[resp.Entries.Count - 1].Key;
-                    resp = fetchBatch();
+                    resp = FetchBatch();
                 }
                 else
                     yield break;
@@ -78,7 +78,7 @@ namespace s3
 
         bool first = true;
 
-        private ListBucketResponse fetchBatch()
+        private ListBucketResponse FetchBatch()
         {
             ListBucketResponse listResp = svc.listBucket(bucket, prefix, marker, first ? 10 : 250, null);
             listResp.Connection.Close();

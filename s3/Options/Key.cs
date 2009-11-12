@@ -10,7 +10,7 @@ namespace s3.Options
         public AccessKey() {
         }
 
-        protected override bool parameterIsCompulsory {
+        protected override bool ParameterIsCompulsory {
             get { return true; }
         }
 
@@ -21,7 +21,7 @@ namespace s3.Options
         public SecretKey() {
         }
 
-        protected override bool parameterIsCompulsory {
+        protected override bool ParameterIsCompulsory {
             get { return true; }
         }
 

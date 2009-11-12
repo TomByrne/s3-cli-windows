@@ -16,12 +16,12 @@ namespace s3.Commands
 
         Command command = null;
 
-        protected override void initialise(CommandLine cl) {
+        protected override void Initialise(CommandLine cl) {
             if (cl.args.Count > 0)
-                command = Command.createInstance(cl.args[0]);
+                command = Command.CreateInstance(cl.args[0]);
         }
 
-        public override void execute() {
+        public override void Execute() {
             Assembly assembly = Assembly.GetExecutingAssembly();
             string commandName = (command == null) ? "Help" : command.GetType().Name;
             using (Stream stream = assembly.GetManifestResourceStream("s3.Help." + commandName + ".txt")) {

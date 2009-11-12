@@ -10,7 +10,7 @@ namespace com.amazon.s3
         public static string OUR_ACCESS_KEY_ID, OUR_SECRET_ACCESS_KEY;
         public static bool verbose = false;
 
-        public static SortedList getHeaders(string acl, string mime)
+        public static SortedList GetHeaders(string acl, string mime)
         {
             SortedList headers = new SortedList();
             if (acl != null)

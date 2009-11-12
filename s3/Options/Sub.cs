@@ -14,20 +14,20 @@ namespace s3.Options
 
         public bool withDelete = false;
 
-        protected override bool parameterIsCompulsory
+        protected override bool ParameterIsCompulsory
         {
             get { return false; }
         }
 
-        protected override void parameterIsSet()
+        protected override void ParameterIsSet()
         {
-            if (parameter != null && !parameter.Equals(deleteOption, StringComparison.InvariantCultureIgnoreCase))
+            if (Parameter != null && !Parameter.Equals(deleteOption, StringComparison.InvariantCultureIgnoreCase))
                 throw new SyntaxException("The /sub option must be specified as /sub or /sub:withdelete");
 
-            withDelete = parameter.Equals(deleteOption, StringComparison.InvariantCultureIgnoreCase);
+            withDelete = Parameter.Equals(deleteOption, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static IEnumerable<string> getFiles(string directory, string pattern, bool recurse)
+        public static IEnumerable<string> GetFiles(string directory, string pattern, bool recurse)
         {
             IEnumerable files = null;
             if (ExecutionEnvironment.IsMono)
@@ -78,7 +78,7 @@ namespace s3.Options
                     else
                     {
                         yield return fullPath;
-                        foreach (string fn in getFiles(fullPath, pattern, recurse))
+                        foreach (string fn in GetFiles(fullPath, pattern, recurse))
                             yield return fn;
                     }
                 }
@@ -91,7 +91,7 @@ namespace s3.Options
                 foreach (string d in subdirectories)
                 {
                     yield return d;
-                    foreach (string fn in getFiles(d, pattern, recurse))
+                    foreach (string fn in GetFiles(d, pattern, recurse))
                         yield return fn;
                 }
         }
@@ -113,7 +113,7 @@ namespace s3.Options
                 {
 
                     Console.WriteLine(e.Key);
-                    if (Yes.confirm("Delete this key? (yes/no)"))
+                    if (Yes.Confirm("Delete this key? (yes/no)"))
                         svc.delete(bucket, e.Key, null).Connection.Close();
                 }
             }

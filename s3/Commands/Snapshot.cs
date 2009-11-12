@@ -15,7 +15,7 @@ namespace s3.Commands
     {
         string volumeId;
 
-        protected override void initialise(CommandLine cl)
+        protected override void Initialise(CommandLine cl)
         {
             if (cl.args.Count == 1)
                 volumeId = cl.args[0].Trim();
@@ -23,7 +23,7 @@ namespace s3.Commands
                 throw new SyntaxException("The snapshot command requires one parameter");
         }
 
-        public override void execute()
+        public override void Execute()
         {
             Amazon.EC2.AmazonEC2Client client = new Amazon.EC2.AmazonEC2Client(AWSAuthConnection.OUR_ACCESS_KEY_ID, AWSAuthConnection.OUR_SECRET_ACCESS_KEY);
             Amazon.EC2.Model.CreateSnapshotRequest request = new Amazon.EC2.Model.CreateSnapshotRequest();

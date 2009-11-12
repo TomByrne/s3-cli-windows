@@ -21,7 +21,7 @@ namespace s3.Commands
 
         const string slashRequiredError = "The first parameter to the get command must have a slash (/) between the bucket name and the key";
 
-        protected override void initialise(CommandLine cl)
+        protected override void Initialise(CommandLine cl)
         {
             if (cl.args.Count < 1 || cl.args.Count > 2)
                 throw new SyntaxException("The get command requires one or two parameters");
@@ -78,7 +78,7 @@ namespace s3.Commands
             }
         }
 
-        public override void execute()
+        public override void Execute()
         {
             AWSAuthConnection svc = new AWSAuthConnection();
             IEnumerable<ListEntry> keys;
@@ -110,7 +110,7 @@ namespace s3.Commands
                     List<ListEntry> sorted = new List<ListEntry>();
                     foreach (ListEntry e in new IterativeList(bucket, key + ".", new Regex("^" + key + @"\.\d{3,5}$")))
                         sorted.Add(e);
-                    sorted.Sort(numericSuffixCompare);
+                    sorted.Sort(NumericSuffixCompare);
                     keys = sorted;
                 }
             }
@@ -151,7 +151,7 @@ namespace s3.Commands
                             string thisFilename;
                             if (sub)
                             {
-                                thisFilename = Path.Combine(filename, keyToFilename(entry.Key.Substring(key.Length)));
+                                thisFilename = Path.Combine(filename, KeyToFilename(entry.Key.Substring(key.Length)));
                                 string directoryName = Path.GetDirectoryName(thisFilename);
                                 if (!Directory.Exists(directoryName))
                                     Directory.CreateDirectory(directoryName);
@@ -165,7 +165,7 @@ namespace s3.Commands
                         else if (!entry.Key.EndsWith(string.Format(".{0:000}", sequence)))
                             throw new FileNotFoundException(string.Format("Object with sequence number {0} not found", sequence));
 
-                        streamToStream(getResp.Object.Stream, fs);
+                        StreamToStream(getResp.Object.Stream, fs);
                         getResp.Object.Stream.Close();
 
                         if (!big)
@@ -190,7 +190,7 @@ namespace s3.Commands
             }
         }
 
-        private string keyToFilename(string key)
+        private string KeyToFilename(string key)
         {
             string ret = key.Replace("/", Path.DirectorySeparatorChar.ToString());
             while (ret.StartsWith(Path.DirectorySeparatorChar.ToString()))
@@ -198,14 +198,14 @@ namespace s3.Commands
             return ret;
         }
 
-        private static int numericSuffixCompare(ListEntry x, ListEntry y)
+        private static int NumericSuffixCompare(ListEntry x, ListEntry y)
         {
             int x1 = int.Parse(x.Key.Substring(x.Key.LastIndexOf(".") + 1));
             int y1 = int.Parse(y.Key.Substring(y.Key.LastIndexOf(".") + 1));
             return x1.CompareTo(y1);
         }
 
-        private static void streamToStream(Stream sIn, Stream sOut)
+        private static void StreamToStream(Stream sIn, Stream sOut)
         {
             int Length = 256;
             Byte[] buffer = new Byte[Length];

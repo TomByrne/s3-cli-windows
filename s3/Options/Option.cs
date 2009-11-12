@@ -30,7 +30,7 @@ namespace s3.Options
         /// Overridden in OptionWithParameter to accept a generic parameter
         /// </summary>
         /// <param name="parameter"></param>
-        protected virtual void initialise(string parameter)
+        protected virtual void Initialise(string parameter)
         {
             if (!string.IsNullOrEmpty(parameter))
                 throw new SyntaxException(string.Format("The {0} option does not accept a parameter", GetType().Name));
@@ -52,7 +52,7 @@ namespace s3.Options
         /// </summary>
         /// <param name="option">One command-line parameter</param>
         /// <returns>An instance of the appropriate Option, or null on failure</returns>
-        public static Option fromString(string option)
+        public static Option FromString(string option)
         {
             if (option.StartsWith(OptionPrefix))
             {
@@ -75,7 +75,7 @@ namespace s3.Options
                     {
                         Option optionObject = (Option)Activator.CreateInstance(o);
                         // not using a constructor to initialise because we don't want explicit constructors in all the derived Option classes
-                        optionObject.initialise(parameter);
+                        optionObject.Initialise(parameter);
                         return optionObject;
                     }
 

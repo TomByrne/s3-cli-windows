@@ -52,8 +52,8 @@ namespace s3
                     {
                         AccessKey accessKey = (AccessKey)cl.options[typeof(AccessKey)];
                         SecretKey secretKey = (SecretKey)cl.options[typeof(SecretKey)];
-                        Settings.Default.AccessKeyId = accessKey.parameter;
-                        Settings.Default.AccessKeySecret = secretKey.parameter;
+                        Settings.Default.AccessKeyId = accessKey.Parameter;
+                        Settings.Default.AccessKeySecret = secretKey.Parameter;
                     }
 
                     if (Settings.Default.AccessKeyId == "" || Settings.Default.AccessKeySecret == "")
@@ -73,18 +73,18 @@ s3 auth command and enter blank details.
 If you find s3.exe useful, please blog or twitter about it.  Thank you.
 ");
                         string key = null, secret = null, password = null;
-                        Auth.getAuthInteractively(ref key, ref secret, ref password);
-                        Auth.saveAuth(key, secret, password);
+                        Auth.GetAuthInteractively(ref key, ref secret, ref password);
+                        Auth.SaveAuth(key, secret, password);
                     }
 
-                    Auth.loadAuth(ref AWSAuthConnection.OUR_ACCESS_KEY_ID, ref AWSAuthConnection.OUR_SECRET_ACCESS_KEY);
+                    Auth.LoadAuth(ref AWSAuthConnection.OUR_ACCESS_KEY_ID, ref AWSAuthConnection.OUR_SECRET_ACCESS_KEY);
                 }
 
                 debugOption = cl.options.ContainsKey(typeof(s3.Options.Verbose));
                 if (debugOption)
                     AWSAuthConnection.verbose = true;
 
-                cl.command.execute();
+                cl.command.Execute();
             }
             catch (SyntaxException ex)
             {
