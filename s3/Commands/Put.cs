@@ -118,35 +118,6 @@ namespace s3.Commands
                 else
                     key = baseKey + Path.GetFileName(file);
 
-                Console.Write(key + "...");
-                if (sync)
-                {
-
-                    if (Utils.IsMono) {
-                        // the getLastModified method does not work on linux, so we iterate a list of 
-                        // received items instead
-                        bool changed = true;
-                        foreach (ListEntry e in existingItems) {
-                            if (e.Key == key) {
-                                if (e.LastModified > File.GetLastWriteTimeUtc(file)) {
-                                    changed = false;
-                                    break;
-                                }
-                            }
-                        }
-                        if (!changed) {
-                            Console.WriteLine(" skipped.");
-                            continue;
-                        }
-                    } else {
-                        DateTime? lastModified = svc.getLastModified(bucket, key);
-                        if (lastModified.HasValue && lastModified.Value > File.GetLastWriteTimeUtc(file)) {
-                            Console.WriteLine(" skipped.");
-                            continue;
-                        } 
-                    }
-                }
-
                 const long maxFileBytes = 5L * 1024L * 1024L * 1024L;
 
                 if (sub && Directory.Exists(file))
@@ -158,6 +129,35 @@ namespace s3.Commands
                 }
                 else
                 {
+
+                    Console.Write(key + "...");
+                    if (sync) {
+
+                        if (Utils.IsMono) {
+                            // the getLastModified method does not work on linux, so we iterate a list of 
+                            // received items instead
+                            bool changed = true;
+                            foreach (ListEntry e in existingItems) {
+                                if (e.Key == key) {
+                                    if (e.LastModified > File.GetLastWriteTimeUtc(file)) {
+                                        changed = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!changed) {
+                                Console.WriteLine(" skipped.");
+                                continue;
+                            }
+                        } else {
+                            DateTime? lastModified = svc.getLastModified(bucket, key);
+                            if (lastModified.HasValue && lastModified.Value > File.GetLastWriteTimeUtc(file)) {
+                                Console.WriteLine(" skipped.");
+                                continue;
+                            }
+                        }
+                    }
+                    
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
                         if (!big)
