@@ -47,16 +47,7 @@ namespace s3
 
                 if (!(cl.command is Auth || cl.command is Help))
                 {
-
-                    if (cl.options.ContainsKey(typeof(s3.Options.Key)) && cl.options.ContainsKey(typeof(s3.Options.Secret))) 
-                    {
-                        Key accessKey = (Key)cl.options[typeof(Key)];
-                        Secret secretKey = (Secret)cl.options[typeof(Secret)];
-                        Settings.Default.AccessKeyId = accessKey.Parameter;
-                        Settings.Default.AccessKeySecret = secretKey.Parameter;
-                    }
-
-                    if (Settings.Default.AccessKeyId == "" || Settings.Default.AccessKeySecret == "")
+                    if ((Settings.Default.AccessKeyId == "" || Settings.Default.AccessKeySecret == "") && !Key.KeyOverridden)
                     {
                         Console.WriteLine(
 @"Your Amazon Access Key is required to access S3 and will be saved to your
@@ -77,7 +68,8 @@ If you find s3.exe useful, please blog or twitter about it.  Thank you.
                         Auth.SaveAuth(key, secret, password);
                     }
 
-                    Auth.LoadAuth(ref AWSAuthConnection.OUR_ACCESS_KEY_ID, ref AWSAuthConnection.OUR_SECRET_ACCESS_KEY);
+                    if (!Key.KeyOverridden)
+                        Auth.LoadAuth(ref AWSAuthConnection.OUR_ACCESS_KEY_ID, ref AWSAuthConnection.OUR_SECRET_ACCESS_KEY);
                 }
 
                 debugOption = cl.options.ContainsKey(typeof(s3.Options.Verbose));
@@ -121,7 +113,7 @@ If you find s3.exe useful, please blog or twitter about it.  Thank you.
                             Console.Error.WriteLine(ex.StackTrace);
                         }
                     }
-                    catch 
+                    catch
                     {
                         // couldn't read XML so fall back to displaying the whole Message string from the original exception
                         Console.Error.WriteLine(ex.Message);

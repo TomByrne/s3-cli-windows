@@ -18,5 +18,5 @@ s3 get mybucket/pictures/ /sub
     needed.  This enables a whole directory hierarchy uploaded with 'put /sub' 
     to be downloaded.
     
-    /key & /secret let you to pass the Amazon S3 access key and secret key
-    on the command line (even if you've previously used auth).
+    /key & /secret allow the Amazon S3 access key and secret key to be passed
+    on the command line (even if auth has previously been used).

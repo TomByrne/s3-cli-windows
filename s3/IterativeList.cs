@@ -53,7 +53,8 @@ namespace s3
                 Count = EntryCount.some;
         }
 
-        public IterativeList(string bucket, string prefix, Regex regex) : this(bucket, prefix)
+        public IterativeList(string bucket, string prefix, Regex regex)
+            : this(bucket, prefix)
         {
             this.regex = regex;
         }

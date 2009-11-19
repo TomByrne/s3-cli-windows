@@ -36,11 +36,13 @@ namespace s3.Options
                 throw new SyntaxException(string.Format("The {0} option does not accept a parameter", GetType().Name));
         }
 
-        public static string OptionPrefix {
-            get {
-                if (Utils.IsLinux) {
+        public static string OptionPrefix
+        {
+            get
+            {
+                if (Utils.IsLinux)
                     return "--";
-                } else
+                else
                     return "/";
             }
         }

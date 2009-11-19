@@ -30,5 +30,5 @@ s3 put mybucket/pictures/ c:\mypictures\ /sub:withdelete /sync
 
     /yes surpresses prompting on each delete with the /sub:withdelete option.
     
-    /key & /secret let you to pass the Amazon S3 access key and secret key
-    on the command line (even if you've previously used auth).    
+    /key & /secret allow the Amazon S3 access key and secret key to be passed
+    on the command line (even if auth has previously been used).

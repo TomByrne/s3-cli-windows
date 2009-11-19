@@ -21,7 +21,6 @@ namespace s3.Commands
 
         protected override void Initialise(CommandLine cl)
         {
-
             if (cl.args.Count != 2)
             {
                 // TODO We should probably allow multiple file names on the command line
@@ -101,9 +100,8 @@ namespace s3.Commands
             bool foundAnything = false;
 
             IterativeList existingItems = null;
-            if (sync && Utils.IsMono) {
+            if (sync && Utils.IsMono)
                 existingItems = new IterativeList(bucket, "");
-            }
 
             foreach (string file in Sub.GetFiles(directory, filename, sub))
             {
@@ -129,35 +127,42 @@ namespace s3.Commands
                 }
                 else
                 {
-
                     Console.Write(key + "...");
-                    if (sync) {
-
-                        if (Utils.IsMono) {
+                    if (sync)
+                    {
+                        if (Utils.IsMono)
+                        {
                             // the getLastModified method does not work on linux, so we iterate a list of 
                             // received items instead
                             bool changed = true;
-                            foreach (ListEntry e in existingItems) {
-                                if (e.Key == key) {
-                                    if (e.LastModified > File.GetLastWriteTimeUtc(file)) {
+                            foreach (ListEntry e in existingItems)
+                            {
+                                if (e.Key == key)
+                                {
+                                    if (e.LastModified > File.GetLastWriteTimeUtc(file))
+                                    {
                                         changed = false;
                                         break;
                                     }
                                 }
                             }
-                            if (!changed) {
+                            if (!changed)
+                            {
                                 Console.WriteLine(" skipped.");
                                 continue;
                             }
-                        } else {
+                        }
+                        else
+                        {
                             DateTime? lastModified = svc.getLastModified(bucket, key);
-                            if (lastModified.HasValue && lastModified.Value > File.GetLastWriteTimeUtc(file)) {
+                            if (lastModified.HasValue && lastModified.Value > File.GetLastWriteTimeUtc(file))
+                            {
                                 Console.WriteLine(" skipped.");
                                 continue;
                             }
                         }
                     }
-                    
+
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
                         if (!big)
@@ -196,6 +201,6 @@ namespace s3.Commands
             if (sub && subWithDelete)
                 Sub.deleteKeys(directory, bucket, baseKey);
         }
-      
+
     }
 }

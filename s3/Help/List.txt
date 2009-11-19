@@ -7,5 +7,5 @@ s3 list mybucket/pic*
     trailing asterisk on the keyprefix is ignored.  With no parameters, gets 
     the list of buckets.
     
-    /key & /secret let you to pass the Amazon S3 access key and secret key
-    on the command line (even if you've previously used auth).    
+    /key & /secret allow the Amazon S3 access key and secret key to be passed
+    on the command line (even if auth has previously been used).

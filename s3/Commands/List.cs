@@ -19,9 +19,7 @@ namespace s3.Commands
         protected override void Initialise(CommandLine cl)
         {
             if (cl.args.Count == 0)
-            {
                 listBuckets = true;
-            }
             else if (cl.args.Count == 1)
             {
                 int slashIdx = cl.args[0].IndexOf("/");
@@ -67,6 +65,5 @@ namespace s3.Commands
                 Console.WriteLine(string.Format("{0} files listed", fileCount));
             }
         }
-
     }
 }
