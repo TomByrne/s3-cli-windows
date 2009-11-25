@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.IO;
@@ -144,22 +145,46 @@ namespace com.amazon.s3
             return put(bucket, key, str, headers, 0, -1);
         }
 
-        public Response put(string bucket, string key, Stream str, SortedList headers, long startByte, long bytesToPut)
+        public Response put(string bucket, string key, Stream str, SortedList headers, long startByte, long bytes)
         {
-            int retries = 0;
             const int maxRetries = 5;
-            long originalBytesToPut = bytesToPut;
+            const int bufferSize = 100 * 1024;
+
+            int retries = 0;
+            byte[] buffer = new byte[bufferSize];
 
             while (true)
             {
                 WebRequest request = null;
                 Exception failEx = null;
-                bytesToPut = originalBytesToPut;
 
                 try
                 {
+                    MD5 md5Hasher = MD5.Create();
+                    str.Seek(startByte, SeekOrigin.Begin);
+                    long bytesToHash = bytes;
+
+                    while (bytesToHash != 0)
+                    {
+                        int bytesToRead;
+                        if (bytesToHash == -1 || bytesToHash > buffer.Length)
+                            bytesToRead = buffer.Length;
+                        else
+                            bytesToRead = (int)bytesToHash;
+                        int nread = str.Read(buffer, 0, bytesToRead);
+                        if (nread == 0) break;
+                        md5Hasher.TransformBlock(buffer, 0, nread, buffer, 0);
+
+                        if (bytesToHash != -1)
+                            bytesToHash -= nread;
+                    }
+
+                    md5Hasher.TransformFinalBlock(new byte[0], 0, 0);
+                    headers["Content-MD5"] = Convert.ToBase64String(md5Hasher.Hash);
+                    
                     request = makeRequest("PUT", encodeKeyForSignature(key), headers, bucket);
 
+                    long bytesToPut = bytes;
                     if (bytesToPut == -1)
                         request.ContentLength = str.Length;
                     else
@@ -168,14 +193,11 @@ namespace com.amazon.s3
                     str.Seek(startByte, SeekOrigin.Begin);
                     request.Timeout = 3 * 60 * 1000; // 3 minutes
 
-                    const int uploadBufferSize = 100 * 1024;
                     Stream sreq = null;
 
                     try
                     {
                         sreq = request.GetRequestStream();
-                        byte[] buffer = new byte[uploadBufferSize];
-                        int nread = 0;
 
                         while (bytesToPut != 0)
                         {
@@ -184,7 +206,7 @@ namespace com.amazon.s3
                                 bytesToRead = buffer.Length;
                             else
                                 bytesToRead = (int)bytesToPut;
-                            nread = str.Read(buffer, 0, bytesToRead);
+                            int nread = str.Read(buffer, 0, bytesToRead);
                             if (nread == 0) break;
                             sreq.Write(buffer, 0, nread);
 

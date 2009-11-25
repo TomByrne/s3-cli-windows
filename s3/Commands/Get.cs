@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -165,7 +166,7 @@ namespace s3.Commands
                         else if (!entry.Key.EndsWith(string.Format(".{0:000}", sequence)))
                             throw new FileNotFoundException(string.Format("Object with sequence number {0} not found", sequence));
 
-                        StreamToStream(getResp.Object.Stream, fs);
+                        StreamToStream(getResp.Object.Stream, fs, getResp.Connection.Headers["ETag"]);
                         getResp.Object.Stream.Close();
 
                         if (!big)
@@ -205,18 +206,24 @@ namespace s3.Commands
             return x1.CompareTo(y1);
         }
 
-        private static void StreamToStream(Stream sIn, Stream sOut)
+        private static void StreamToStream(Stream sIn, Stream sOut, string md5Expected)
         {
+            MD5 md5Hasher = MD5.Create();
             int Length = 256;
             Byte[] buffer = new Byte[Length];
-            int bytesRead = sIn.Read(buffer, 0, Length);
-            // write the required bytes
-            while (bytesRead > 0)
-            {
-                sOut.Write(buffer, 0, bytesRead);
-                bytesRead = sIn.Read(buffer, 0, Length);
-            }
-        }
 
+            while (true)
+            {
+                int bytesRead = sIn.Read(buffer, 0, Length);
+                if (bytesRead == 0) break;
+                md5Hasher.TransformBlock(buffer, 0, bytesRead, buffer, 0);
+                sOut.Write(buffer, 0, bytesRead);
+            }
+
+            md5Hasher.TransformFinalBlock(new byte[0], 0, 0);
+            string md5Calculated = "\"" + String.Concat(Array.ConvertAll(md5Hasher.Hash, delegate(byte x) { return x.ToString("X2"); })) + "\"";
+            if (!md5Calculated.Equals(md5Expected, StringComparison.InvariantCultureIgnoreCase))
+                throw new Exception("MD5 mismatch on download.  Possible data corruption!");
+        }
     }
 }

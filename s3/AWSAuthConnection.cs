@@ -13,10 +13,12 @@ namespace com.amazon.s3
         public static SortedList GetHeaders(string acl, string mime)
         {
             SortedList headers = new SortedList();
+
             if (acl != null)
                 headers.Add("x-amz-acl", acl);
             if (mime != null)
                 headers.Add("Content-Type", mime);
+
             return headers;
         }
     }

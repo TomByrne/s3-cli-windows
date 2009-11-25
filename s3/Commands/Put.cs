@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -68,9 +69,8 @@ namespace s3.Commands
 
         public override void Execute()
         {
-            AWSAuthConnection svc = new AWSAuthConnection();
             SortedList headers = AWSAuthConnection.GetHeaders(acl, null);
-
+            AWSAuthConnection svc = new AWSAuthConnection();
             string directory, filename;
 
             if (fileArgument == "") // nothing specified; assume current directory
@@ -127,7 +127,6 @@ namespace s3.Commands
                 }
                 else
                 {
-                    Console.Write(key + "...");
                     if (sync)
                     {
                         if (Utils.IsMono)
@@ -147,19 +146,13 @@ namespace s3.Commands
                                 }
                             }
                             if (!changed)
-                            {
-                                Console.WriteLine(" skipped.");
                                 continue;
-                            }
                         }
                         else
                         {
                             DateTime? lastModified = svc.getLastModified(bucket, key);
                             if (lastModified.HasValue && lastModified.Value > File.GetLastWriteTimeUtc(file))
-                            {
-                                Console.WriteLine(" skipped.");
                                 continue;
-                            }
                         }
                     }
 
@@ -172,8 +165,8 @@ namespace s3.Commands
                                     Path.GetFileName(file), maxFileBytes / 1024 / 1024 / 1024));
                             else
                             {
+                                Console.WriteLine(key);
                                 svc.put(bucket, key, fs, headers).Connection.Close();
-                                Console.WriteLine(" sent " + Utils.FormatFileSize(fs.Length) + ".");
                             }
                         }
                         else
