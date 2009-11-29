@@ -36,5 +36,10 @@ namespace s3
             else if (bytes > kilobyte) return (bytes / kilobyte).ToString("0.00 KB");
             else return bytes + " bytes";
         }
+
+        public static string BytesToHex(byte[] bytes)
+        {
+            return String.Concat(Array.ConvertAll(bytes, delegate(byte x) { return x.ToString("X2"); }));
+        }
     }
 }

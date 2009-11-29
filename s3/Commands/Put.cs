@@ -45,6 +45,9 @@ namespace s3.Commands
             if (big && sub)
                 throw new SyntaxException("The /big option is not currently compatible with the /sub option");
 
+            if (big && sync)
+                throw new SyntaxException("There is no need to specify the /sync option with the /big option because /big uses checksums to upload only the chunks that need to be uploaded");
+
             if (big)
             {
                 Big bigOption = (Big)cl.options[typeof(Big)];
@@ -171,15 +174,32 @@ namespace s3.Commands
                         }
                         else
                         {
+                            const string formatString = "{0}.{1:000}";
                             int sequence = 0;
+
                             while (fs.Position < fs.Length)
                             {
                                 long putBytes = Math.Min(perChunkBytes, fs.Length - fs.Position);
-                                string thisKey = string.Format("{0}.{1:000}", key, sequence);
+                                string thisKey = string.Format(formatString, key, sequence++);
+                                string remoteMD5 = svc.getChecksum(bucket, thisKey);
+
+                                if (remoteMD5 != null)
+                                {
+                                    long positionBeforeChecksum = fs.Position;
+                                    string localMD5 = Utils.BytesToHex(AWSAuthConnection.calculateMD5(fs, fs.Position, putBytes));
+                                    if (string.Equals(localMD5, remoteMD5, StringComparison.InvariantCultureIgnoreCase))
+                                        continue; // file position has already been advanced by calculating the checksum
+                                    else
+                                        fs.Position = positionBeforeChecksum;
+                                }
+
                                 Console.WriteLine(thisKey);
                                 svc.put(bucket, thisKey, fs, headers, fs.Position, putBytes).Connection.Close();
-                                sequence++;
                             }
+
+                            // ensure that there isn't a key on S3 corresponding to the next chunk number, perhaps
+                            // from a previous upload of the same file when it was smaller than it is now
+                            svc.delete(bucket, string.Format(formatString, key, sequence), null).Connection.Close();
                         }
                     }
                 }

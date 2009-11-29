@@ -145,7 +145,6 @@ namespace s3.Commands
                     foreach (ListEntry entry in keys)
                     {
                         GetResponse getResp = svc.get(bucket, entry.Key, null, true);
-                        Console.WriteLine(string.Format("{0}/{1}", bucket, entry.Key));
 
                         if (!big)
                         {
@@ -163,9 +162,16 @@ namespace s3.Commands
                                 thisFilename = entry.Key.Substring(entry.Key.LastIndexOf("/") + 1);
                             fs = new FileStream(thisFilename, FileMode.Create, FileAccess.ReadWrite);
                         }
-                        else if (!entry.Key.EndsWith(string.Format(".{0:000}", sequence)))
-                            throw new FileNotFoundException(string.Format("Object with sequence number {0} not found", sequence));
+                        else
+                        {
+                            if (!entry.Key.EndsWith(string.Format(".{0:000}", sequence)))
+                            {
+                                Console.Error.WriteLine(string.Format("Warning: The download has completed because there is no chunk number {0}, but there are chunks on S3 with higher numbers.  These chunks were probably uploaded to S3 when the file was larger than it is now, but it could indicate a missing chunk.  To surpress this message, delete the later chunks.", sequence));
+                                break;
+                            }
+                        }
 
+                        Console.WriteLine(string.Format("{0}/{1}", bucket, entry.Key));
                         StreamToStream(getResp.Object.Stream, fs, getResp.Connection.Headers["ETag"]);
                         getResp.Object.Stream.Close();
 
@@ -221,7 +227,7 @@ namespace s3.Commands
             }
 
             md5Hasher.TransformFinalBlock(new byte[0], 0, 0);
-            string md5Calculated = "\"" + String.Concat(Array.ConvertAll(md5Hasher.Hash, delegate(byte x) { return x.ToString("X2"); })) + "\"";
+            string md5Calculated = "\"" + Utils.BytesToHex(md5Hasher.Hash) + "\"";
             if (!md5Calculated.Equals(md5Expected, StringComparison.InvariantCultureIgnoreCase))
                 throw new Exception("MD5 mismatch on download.  Possible data corruption!");
         }

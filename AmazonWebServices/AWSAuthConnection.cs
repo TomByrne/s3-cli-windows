@@ -150,6 +150,7 @@ namespace com.amazon.s3
             const int maxRetries = 5;
             const int bufferSize = 100 * 1024;
 
+            headers["Content-MD5"] = Convert.ToBase64String(calculateMD5(str, startByte, bytes));
             int retries = 0;
             byte[] buffer = new byte[bufferSize];
 
@@ -160,28 +161,6 @@ namespace com.amazon.s3
 
                 try
                 {
-                    MD5 md5Hasher = MD5.Create();
-                    str.Seek(startByte, SeekOrigin.Begin);
-                    long bytesToHash = bytes;
-
-                    while (bytesToHash != 0)
-                    {
-                        int bytesToRead;
-                        if (bytesToHash == -1 || bytesToHash > buffer.Length)
-                            bytesToRead = buffer.Length;
-                        else
-                            bytesToRead = (int)bytesToHash;
-                        int nread = str.Read(buffer, 0, bytesToRead);
-                        if (nread == 0) break;
-                        md5Hasher.TransformBlock(buffer, 0, nread, buffer, 0);
-
-                        if (bytesToHash != -1)
-                            bytesToHash -= nread;
-                    }
-
-                    md5Hasher.TransformFinalBlock(new byte[0], 0, 0);
-                    headers["Content-MD5"] = Convert.ToBase64String(md5Hasher.Hash);
-                    
                     request = makeRequest("PUT", encodeKeyForSignature(key), headers, bucket);
 
                     long bytesToPut = bytes;
@@ -261,6 +240,34 @@ namespace com.amazon.s3
             }
         }
 
+        internal static byte[] calculateMD5(Stream str, long startByte, long bytes)
+        {
+            const int bufferSize = 100 * 1024;
+
+            byte[] buffer = new byte[bufferSize];
+            MD5 md5Hasher = MD5.Create();
+            str.Seek(startByte, SeekOrigin.Begin);
+            long bytesToHash = bytes;
+
+            while (bytesToHash != 0)
+            {
+                int bytesToRead;
+                if (bytesToHash == -1 || bytesToHash > buffer.Length)
+                    bytesToRead = buffer.Length;
+                else
+                    bytesToRead = (int)bytesToHash;
+                int nread = str.Read(buffer, 0, bytesToRead);
+                if (nread == 0) break;
+                md5Hasher.TransformBlock(buffer, 0, nread, buffer, 0);
+
+                if (bytesToHash != -1)
+                    bytesToHash -= nread;
+            }
+
+            md5Hasher.TransformFinalBlock(new byte[0], 0, 0);
+            return md5Hasher.Hash;
+        }
+
         // NOTE: The Syste.Net.Uri class does modifications to the URL.
         // For example, if you have two consecutive slashes, it will
         // convert these to a single slash.  This could lead to invalid
@@ -297,7 +304,7 @@ namespace com.amazon.s3
         }
 
         /// <summary>
-        /// Gets the last modified date for a key on S3
+        /// Gets the last modified date for a key on S3 without downloading it
         /// </summary>
         /// <param name="bucket">The name of the bucket where the object lives</param>
         /// <param name="key">The name of the key to use</param>
@@ -320,6 +327,35 @@ namespace com.amazon.s3
 
             resp.Close();
             return DateTime.Parse(resp.Headers["Last-Modified"]).ToUniversalTime();
+        }
+
+        /// <summary>
+        /// Gets the MD5 checksum for a key on S3 without downloading it
+        /// </summary>
+        /// <param name="bucket">The name of the bucket where the object lives</param>
+        /// <param name="key">The name of the key to use</param>
+        /// <returns>Returns MD5 checksum as hex with no quotes (not base64)</returns>
+        public string getChecksum(string bucket, string key)
+        {
+            WebResponse resp;
+
+            try
+            {
+                resp = head(bucket, key, null).Connection;
+            }
+            catch (WebException ex)
+            {
+                if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.NotFound)
+                    return null;
+                else
+                    throw;
+            }
+
+            resp.Close();
+            string quotedHash = resp.Headers["ETag"];
+            Debug.Assert(quotedHash[0] == '"');
+            Debug.Assert(quotedHash[quotedHash.Length - 1] == '"');
+            return quotedHash.Substring(1, quotedHash.Length - 2);
         }
 
         /// <summary>
