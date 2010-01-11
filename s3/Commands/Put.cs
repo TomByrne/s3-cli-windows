@@ -72,7 +72,6 @@ namespace s3.Commands
 
         public override void Execute()
         {
-            SortedList headers = AWSAuthConnection.GetHeaders(acl, null);
             AWSAuthConnection svc = new AWSAuthConnection();
             string directory, filename;
 
@@ -159,6 +158,7 @@ namespace s3.Commands
                         }
                     }
 
+                    SortedList headers = AWSAuthConnection.GetHeaders(acl, file);
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
                         if (!big)
