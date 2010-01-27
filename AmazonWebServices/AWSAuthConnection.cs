@@ -509,6 +509,7 @@ namespace com.amazon.s3
             {
                 HttpWebRequest httpReq = req as HttpWebRequest;
                 httpReq.AllowWriteStreamBuffering = false;
+                httpReq.Proxy.Credentials = CredentialCache.DefaultCredentials;
             }
             req.Method = method;
 
