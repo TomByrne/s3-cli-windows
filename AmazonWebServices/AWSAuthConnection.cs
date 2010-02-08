@@ -16,11 +16,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Web;
 using System.IO;
 
 namespace com.amazon.s3
 {
+    public delegate void progressHandler(string description, long bytesDone, long bytesTotal);
+
     /// An interface into the S3 system.  It is initially configured with
     /// authentication and connection parameters and exposes methods to access and
     /// manipulate S3 data.
@@ -30,6 +33,8 @@ namespace com.amazon.s3
         private string awsSecretAccessKey;
         private bool isSecure;
         private int port;
+
+        public static event progressHandler progress;
 
         public AWSAuthConnection()
             : this(OUR_ACCESS_KEY_ID, OUR_SECRET_ACCESS_KEY)
@@ -170,13 +175,16 @@ namespace com.amazon.s3
                         request.ContentLength = bytesToPut;
 
                     str.Seek(startByte, SeekOrigin.Begin);
-                    request.Timeout = 3 * 60 * 1000; // 3 minutes
+                    request.Timeout = Timeout.Infinite;
+                    (request as HttpWebRequest).ReadWriteTimeout = 3 * 60 * 1000;  // 3 minutes
 
                     Stream sreq = null;
 
                     try
                     {
                         sreq = request.GetRequestStream();
+
+                        long bytesWritten = 0;
 
                         while (bytesToPut != 0)
                         {
@@ -188,6 +196,8 @@ namespace com.amazon.s3
                             int nread = str.Read(buffer, 0, bytesToRead);
                             if (nread == 0) break;
                             sreq.Write(buffer, 0, nread);
+                            bytesWritten += nread;
+                            if (progress != null) progress(key, bytesWritten, request.ContentLength);
 
                             if (bytesToPut != -1)
                                 bytesToPut -= nread;

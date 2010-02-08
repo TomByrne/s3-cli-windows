@@ -32,3 +32,5 @@ s3 put mybucket/pictures/ c:\mypictures\ /sub:withdelete /sync
     
     /key & /secret allow the Amazon S3 access key and secret key to be passed
     on the command line (even if auth has previously been used).
+    
+    /nogui disables the graphical progress window.

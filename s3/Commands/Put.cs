@@ -154,7 +154,10 @@ namespace s3.Commands
                         {
                             DateTime? lastModified = svc.getLastModified(bucket, key);
                             if (lastModified.HasValue && lastModified.Value > File.GetLastWriteTimeUtc(file))
+                            {
+                                Progress.reportProgress(key, 0, 0);
                                 continue;
+                            }
                         }
                     }
 
@@ -188,7 +191,10 @@ namespace s3.Commands
                                     long positionBeforeChecksum = fs.Position;
                                     string localMD5 = Utils.BytesToHex(AWSAuthConnection.calculateMD5(fs, fs.Position, putBytes));
                                     if (string.Equals(localMD5, remoteMD5, StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        Progress.reportProgress(thisKey, 0, 0);
                                         continue; // file position has already been advanced by calculating the checksum
+                                    }
                                     else
                                         fs.Position = positionBeforeChecksum;
                                 }
@@ -214,6 +220,5 @@ namespace s3.Commands
             if (sub && subWithDelete)
                 Sub.deleteKeys(directory, bucket, baseKey);
         }
-
     }
 }

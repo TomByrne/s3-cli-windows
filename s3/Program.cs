@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -75,6 +76,13 @@ If you find s3.exe useful, please blog or twitter about it.  Thank you.
                 debugOption = cl.options.ContainsKey(typeof(s3.Options.Verbose));
                 if (debugOption)
                     AWSAuthConnection.verbose = true;
+
+                if (!cl.options.ContainsKey(typeof(s3.Options.NoGUI)))
+                {
+                    Thread thread = new Thread(Progress.showProgressWindow);
+                    thread.IsBackground = true;
+                    thread.Start();
+                }
 
                 cl.command.Execute();
             }

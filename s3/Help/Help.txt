@@ -3,7 +3,7 @@
 *s3 auth [<key> <secret>]
     Gets and saves your Amazon authentication details for future invocations.
     
-*s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes] [/key:<key> /secret:<secret>]
+*s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes] [/key:<key> /secret:<secret>] [/nogui]
     Puts a file, files or an entire directory hierarchy to S3.  Big files can
     be split up into smaller chunks (/big), the Windows archive flag can be 
     honoured (/backup) and there is an option to upload only files modified
@@ -13,7 +13,7 @@ Examples:
 s3 put mybucket pic*.jpg /acl:public-read
 s3 put mybucket/pictures/ c:\mypictures\ /sub:withdelete /sync
            
-*s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub] [/key:<key> /secret:<secret>]
+*s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub] [/key:<key> /secret:<secret>] [/nogui]
     Gets an object or objects from S3.  Can join together files that have been
     uploaded in chunks (/big) or download entire directory hierarchies (/sub).
     Type 's3 help get' for more details.

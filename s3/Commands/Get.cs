@@ -111,6 +111,8 @@ namespace s3.Commands
                     List<ListEntry> sorted = new List<ListEntry>();
                     foreach (ListEntry e in new IterativeList(bucket, key + ".", new Regex("^" + key + @"\.\d{3,5}$")))
                         sorted.Add(e);
+                    if (sorted.Count == 0)
+                        throw new FileNotFoundException("Not found: " + key + ".000");
                     sorted.Sort(NumericSuffixCompare);
                     keys = sorted;
                 }
@@ -172,7 +174,7 @@ namespace s3.Commands
                         }
 
                         Console.WriteLine(string.Format("{0}/{1}", bucket, entry.Key));
-                        StreamToStream(getResp.Object.Stream, fs, getResp.Connection.Headers["ETag"]);
+                        StreamToStream(getResp.Object.Stream, fs, getResp.Connection.Headers["ETag"], entry.Key, entry.Size);
                         getResp.Object.Stream.Close();
 
                         if (!big)
@@ -212,11 +214,13 @@ namespace s3.Commands
             return x1.CompareTo(y1);
         }
 
-        private static void StreamToStream(Stream sIn, Stream sOut, string md5Expected)
+        private static void StreamToStream(Stream sIn, Stream sOut, string md5Expected, string key, long totalBytes)
         {
             MD5 md5Hasher = MD5.Create();
             int Length = 256;
             Byte[] buffer = new Byte[Length];
+            long bytesSoFar = 0;
+            long ct = 0;
 
             while (true)
             {
@@ -224,6 +228,11 @@ namespace s3.Commands
                 if (bytesRead == 0) break;
                 md5Hasher.TransformBlock(buffer, 0, bytesRead, buffer, 0);
                 sOut.Write(buffer, 0, bytesRead);
+                bytesSoFar += bytesRead;
+                ct++;
+
+                if (ct % 100 == 0 || bytesSoFar == totalBytes)
+                    Progress.reportProgress(key, bytesSoFar, totalBytes);
             }
 
             md5Hasher.TransformFinalBlock(new byte[0], 0, 0);

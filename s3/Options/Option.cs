@@ -18,12 +18,13 @@ namespace s3.Options
             typeof(Acl), 
             typeof(Backup), 
             typeof(Big), 
+            typeof(Key),
+            typeof(NoGUI),
+            typeof(Secret),
             typeof(Sub),
             typeof(Sync), 
             typeof(Verbose),
-            typeof(Yes),
-            typeof(Key),
-            typeof(Secret)
+            typeof(Yes)
         };
 
         /// <summary>
