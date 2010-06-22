@@ -109,7 +109,7 @@ namespace s3.Commands
                 else
                 {
                     List<ListEntry> sorted = new List<ListEntry>();
-                    foreach (ListEntry e in new IterativeList(bucket, key + ".", new Regex("^" + key + @"\.\d{3,5}$")))
+                    foreach (ListEntry e in new IterativeList(bucket, key + ".", new Regex("^" + Regex.Escape(key) + @"\.\d{3,5}$")))
                         sorted.Add(e);
                     if (sorted.Count == 0)
                         throw new FileNotFoundException("Not found: " + key + ".000");

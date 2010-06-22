@@ -11,12 +11,14 @@ namespace s3.Commands
         static List<Type> allCommands = new List<Type>()
         {
             typeof(Auth),
+            typeof(DeleteSnapshots),
             typeof(Get),
             typeof(Help),
             typeof(Instances),
             typeof(List),
             typeof(Put),
-            typeof(Snapshot)
+            typeof(Snapshot),
+            typeof(Snapshots)
         };
 
         protected abstract void Initialise(CommandLine commandLine);

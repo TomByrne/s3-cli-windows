@@ -17,7 +17,8 @@ namespace s3.Options
         { 
             typeof(Acl), 
             typeof(Backup), 
-            typeof(Big), 
+            typeof(Big),
+            typeof(Days),
             typeof(Key),
             typeof(NoGUI),
             typeof(Secret),

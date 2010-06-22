@@ -34,5 +34,11 @@ s3 list mybucket/pic [/key:<key> /secret:<secret>]
 *s3 snapshot <volumeID> [/key:<key> /secret:<secret>]
     Starts an EBS snapshot.  Returns as soon as job begins.
 
+*s3 snapshots 
+    Lists all snapshots.
+
+*s3 deletesnapshots <snapshotID|volumeID> [/days:<days>]
+    Deletes the snapshot specified by snapshotID, or all snapshots of the
+	specified EBS volume older than the specified number of days.
+
 Please blog or twitter about s3.exe if you find it useful.
-        
