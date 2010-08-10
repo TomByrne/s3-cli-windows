@@ -503,6 +503,7 @@
     <Compile Include="IterativeList.cs" />
     <Compile Include="Options\Days.cs" />
     <Compile Include="Options\NoGUI.cs" />
+    <Compile Include="Options\StorageClass.cs" />
     <Compile Include="Progress.cs">
       <SubType>Form</SubType>
     </Compile>

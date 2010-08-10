@@ -14,6 +14,7 @@ namespace s3.Commands
     class List : Command
     {
         bool listBuckets = false;
+        bool showStorageClass = false;
         string bucket, prefix;
 
         protected override void Initialise(CommandLine cl)
@@ -33,6 +34,8 @@ namespace s3.Commands
                     bucket = cl.args[0].Substring(0, slashIdx);
                     prefix = cl.args[0].Substring(slashIdx + 1);
                 }
+
+                showStorageClass = cl.options.ContainsKey(typeof(StorageClass));
             }
             else
                 throw new SyntaxException("The list command requires either zero or one parameters");
@@ -58,7 +61,8 @@ namespace s3.Commands
                 int fileCount = 0;
                 foreach (ListEntry e in new IterativeList(bucket, prefix))
                 {
-                    Console.WriteLine(string.Format("{2}\t{1:0.0}M\t{0}", e.Key, e.Size / (1024 * 1024), e.LastModified));
+                    string storageDescription = (showStorageClass && e.StorageClass.Length > 0) ? e.StorageClass[0] + " " : string.Empty;
+                    Console.WriteLine(string.Format("{2}\t{1:0.0}M\t{3}{0}", e.Key, e.Size / (1024 * 1024), e.LastModified, storageDescription));
                     fileCount++;
                 }
 

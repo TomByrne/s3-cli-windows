@@ -17,7 +17,7 @@ namespace s3.Commands
         long perChunkBytes;
         string acl;
         bool backup, sync, big, sub, subWithDelete;
-        string keyArgument, fileArgument;
+        string keyArgument, fileArgument, storageClass;
         string bucket, baseKey;
 
         protected override void Initialise(CommandLine cl)
@@ -39,6 +39,8 @@ namespace s3.Commands
             sync = cl.options.ContainsKey(typeof(Sync));
             big = cl.options.ContainsKey(typeof(Big));
             sub = cl.options.ContainsKey(typeof(Sub));
+            storageClass = StorageClass.GetOptionParameter(cl, typeof(StorageClass), false);
+
             if (sub)
                 subWithDelete = (cl.options[typeof(Sub)] as Sub).withDelete;
 
@@ -161,7 +163,7 @@ namespace s3.Commands
                         }
                     }
 
-                    SortedList headers = AWSAuthConnection.GetHeaders(acl, file);
+                    SortedList headers = AWSAuthConnection.GetHeaders(acl, file, storageClass);
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                     {
                         if (!big)

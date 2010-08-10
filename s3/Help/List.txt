@@ -1,4 +1,4 @@
-﻿*s3 list [<bucket>[/<keyprefix>]] [/key:<key> /secret:<secret>]
+﻿*s3 list [<bucket>[/<keyprefix>]] [/key:<key> /secret:<secret>] [/storageclass]
 
 Example:
 s3 list mybucket/pic*
@@ -9,3 +9,6 @@ s3 list mybucket/pic*
     
     /key & /secret allow the Amazon S3 access key and secret key to be passed
     on the command line (even if auth has previously been used).
+
+	If /storageclass in specified, then the listing includes the first letter
+	of the storage class of each item (e.g. R for reduced redundancy).

@@ -1,5 +1,6 @@
 ﻿*s3 put <bucket>[/<keyprefix>] <path> [/big[:<size>]] [/backup] 
         [/sync] [/acl:<acl>] [/sub[:withdelete]] [/yes] [/key:<key> /secret:<secret>]
+		[/storageclass:<storageclass>]
 
 Examples:
 s3 put mybucket pic*.jpg /acl:public-read
@@ -34,3 +35,7 @@ s3 put mybucket/pictures/ c:\mypictures\ /sub:withdelete /sync
     on the command line (even if auth has previously been used).
     
     /nogui disables the graphical progress window.
+
+    /storageclass specifies the storage class which S3 should store this object
+    under.  Valid classes at time of writing are STANDARD (default) or 
+    REDUCED_REDUNDANCY (see S3 documentation for more details).

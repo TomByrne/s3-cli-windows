@@ -22,6 +22,7 @@ namespace s3.Options
             typeof(Key),
             typeof(NoGUI),
             typeof(Secret),
+            typeof(StorageClass),
             typeof(Sub),
             typeof(Sync), 
             typeof(Verbose),
