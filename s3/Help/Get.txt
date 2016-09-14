@@ -11,6 +11,8 @@ s3 get mybucket/pictures/ /sub
     A trailing * on the end of the key is treated as a wildcard, except when 
     the /big option or a full <filename> is specified.
 
+    /overwrite forces redownload of files which already exist on disk (by default they're skipped).
+
     /big fetches a file or files split using /big with the put command.
 
     /sub causes all keys beginning with the specified keyprefix to be fetched

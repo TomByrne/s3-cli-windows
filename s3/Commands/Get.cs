@@ -15,7 +15,7 @@ namespace s3.Commands
 {
     class Get : Command
     {
-        bool big, sub;
+        bool big, sub, overwrite;
         string resource, filename;
         string bucket, key;
         bool explicitFilename;
@@ -29,6 +29,7 @@ namespace s3.Commands
 
             big = cl.options.ContainsKey(typeof(Big));
             sub = cl.options.ContainsKey(typeof(Sub));
+            overwrite = cl.options.ContainsKey(typeof(Overwrite));
 
             if (big && sub)
                 throw new SyntaxException("The /big option is not currently compatible with the /sub option");
@@ -74,7 +75,7 @@ namespace s3.Commands
                 {
                     filename = cl.args[1];
                     if (!Directory.Exists(filename))
-                        throw new SyntaxException("With the /sub option, the second parameter must be an existing directory");
+                        Directory.CreateDirectory(filename);
                 }
             }
         }
@@ -146,7 +147,6 @@ namespace s3.Commands
 
                     foreach (ListEntry entry in keys)
                     {
-                        GetResponse getResp = svc.get(bucket, entry.Key, null, true);
 
                         if (!big)
                         {
@@ -159,10 +159,22 @@ namespace s3.Commands
                                     Directory.CreateDirectory(directoryName);
                             }
                             else if (explicitFilename)
-                                thisFilename = filename;
+                               thisFilename = filename;
                             else
-                                thisFilename = entry.Key.Substring(entry.Key.LastIndexOf("/") + 1);
-                            fs = new FileStream(thisFilename, FileMode.Create, FileAccess.ReadWrite);
+                               thisFilename = entry.Key.Substring(entry.Key.LastIndexOf("/") + 1);
+
+                            if (thisFilename != filename)
+                                if (!overwrite && File.Exists(thisFilename))
+                                {
+                                    Console.WriteLine(string.Format("Already exists: {0}/{1}", bucket, entry.Key));
+                                }
+                                else
+                                {
+                                    fs = new FileStream(thisFilename, FileMode.Create, FileAccess.ReadWrite);
+                                }
+                            else
+                                fs = null;
+                            
                         }
                         else
                         {
@@ -173,21 +185,23 @@ namespace s3.Commands
                             }
                         }
 
-                        Console.WriteLine(string.Format("{0}/{1}", bucket, entry.Key));
-                        StreamToStream(getResp.Object.Stream, fs, getResp.Connection.Headers["ETag"], entry.Key, entry.Size);
-                        getResp.Object.Stream.Close();
-
-                        if (!big)
+                        if (fs != null)
+                        {
+                            Console.WriteLine(string.Format("Downloading: {0}/{1}", bucket, entry.Key));
+                            GetResponse getResp = svc.get(bucket, entry.Key, null, true);
+                            StreamToStream(getResp.Object.Stream, fs, getResp.Connection.Headers["ETag"], entry.Key, entry.Size);
+                            getResp.Object.Stream.Close();
                             fs.Close();
+                            getResp.Connection.Close();
+                        }
 
-                        getResp.Connection.Close();
                         sequence++;
                     }
 
                     if (big)
                         fs.Close();
                 }
-                catch
+                catch(Exception e)
                 {
                     deletePartialFileHandler(null, null);
                     throw;
