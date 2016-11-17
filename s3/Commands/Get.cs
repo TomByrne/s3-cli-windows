@@ -147,10 +147,9 @@ namespace s3.Commands
 
                     foreach (ListEntry entry in keys)
                     {
-
+                        string thisFilename = null;
                         if (!big)
                         {
-                            string thisFilename;
                             if (sub)
                             {
                                 thisFilename = Path.Combine(filename, KeyToFilename(entry.Key.Substring(key.Length)));
@@ -189,10 +188,15 @@ namespace s3.Commands
                         {
                             Console.WriteLine(string.Format("Downloading: {0}/{1}", bucket, entry.Key));
                             GetResponse getResp = svc.get(bucket, entry.Key, null, true);
-                            StreamToStream(getResp.Object.Stream, fs, getResp.Connection.Headers["ETag"], entry.Key, entry.Size);
+                            var valid = StreamToStream(getResp.Object.Stream, fs, getResp.Connection.Headers["ETag"], entry.Key, entry.Size);
                             getResp.Object.Stream.Close();
                             fs.Close();
                             getResp.Connection.Close();
+
+                            if (!big && !valid)
+                            {
+                                File.Delete(thisFilename);
+                            }
                         }
 
                         sequence++;
@@ -228,9 +232,13 @@ namespace s3.Commands
             return x1.CompareTo(y1);
         }
 
-        private static void StreamToStream(Stream sIn, Stream sOut, string md5Expected, string key, long totalBytes)
+        private static bool StreamToStream(Stream sIn, Stream sOut, string md5Expected, string key, long totalBytes)
         {
-            MD5 md5Hasher = MD5.Create();
+            MD5 md5Hasher = null;
+            if (md5Expected != null)
+            {
+                md5Hasher = MD5.Create();
+            }
             int Length = 256;
             Byte[] buffer = new Byte[Length];
             long bytesSoFar = 0;
@@ -240,7 +248,7 @@ namespace s3.Commands
             {
                 int bytesRead = sIn.Read(buffer, 0, Length);
                 if (bytesRead == 0) break;
-                md5Hasher.TransformBlock(buffer, 0, bytesRead, buffer, 0);
+                if (md5Expected != null) md5Hasher.TransformBlock(buffer, 0, bytesRead, buffer, 0);
                 sOut.Write(buffer, 0, bytesRead);
                 bytesSoFar += bytesRead;
                 ct++;
@@ -249,10 +257,17 @@ namespace s3.Commands
                     Progress.reportProgress(key, bytesSoFar, totalBytes);
             }
 
-            md5Hasher.TransformFinalBlock(new byte[0], 0, 0);
-            string md5Calculated = "\"" + Utils.BytesToHex(md5Hasher.Hash) + "\"";
-            if (!md5Calculated.Equals(md5Expected, StringComparison.InvariantCultureIgnoreCase))
-                throw new Exception("MD5 mismatch on download.  Possible data corruption!");
+            if (md5Expected != null)
+            {
+                md5Hasher.TransformFinalBlock(new byte[0], 0, 0);
+                string md5Calculated = "\"" + Utils.BytesToHex(md5Hasher.Hash) + "\"";
+                if (!md5Calculated.Equals(md5Expected, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Console.WriteLine(string.Format("MD5 mismatch on download.  Possible data corruption!"));
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
