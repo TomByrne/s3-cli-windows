@@ -336,7 +336,15 @@ namespace com.amazon.s3
             }
 
             resp.Close();
-            return DateTime.Parse(resp.Headers["Last-Modified"]).ToUniversalTime();
+            var header = resp.Headers["Last-Modified"];
+            if (header != null)
+            {
+                return DateTime.Parse(header).ToUniversalTime();
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>

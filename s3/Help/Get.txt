@@ -1,4 +1,4 @@
-﻿*s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub] [/key:<key> /secret:<secret>]
+﻿*s3 get <bucket>/<keyprefix> [<path>] [/big] [/sub] [/key:<key> /secret:<secret>] [/overwrite]
 
 Examples:
 s3 get mybucket/pic*
@@ -24,3 +24,5 @@ s3 get mybucket/pictures/ /sub
     on the command line (even if auth has previously been used).
     
     /nogui disables the graphical progress window.
+
+	/overwrite forces the redownload of files which already exist on disk
